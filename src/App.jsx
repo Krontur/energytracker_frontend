@@ -1,35 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, CssBaseline, Box } from '@mui/material';
+import { Home, Group, ElectricMeter, HomeMax } from '@mui/icons-material';
+import logo from './assets/logoenergytracker.png';
+import background from './assets/backgroundET.png';
+
+
+const drawerWidth = 240;
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}>
+        <Toolbar>
+          <Typography variant="h6" noWrap component="div">
+            Energy Tracker
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+          height: '100%',
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+      >
+        <Toolbar>
+          <Box component="img" src={logo} alt="Energy Tracker Logo" sx={{ width: '100%', maxHeight: 196, objectFit: 'contain' }} />
+        </Toolbar>
+        <List>
+            {[{ text: 'Home', icon: <Home /> }, { text: 'Users', icon: <Group /> }, { text: 'Meters', icon: <ElectricMeter /> }, { text: 'Stations', icon: <HomeMax /> }].map((item) => (
+              <ListItem button key={item.text}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            ))}
+          </List>
+      </Drawer>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1,
+              bgcolor: 'background.default',
+              p: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              height: '100vh',
+              paddingTop: 15
+          }}
+      >
+        <Box component="img" src={background} alt="Energy Tracker Background" sx={{ width: '100%', objectFit: 'contain' }} />
+        <Toolbar />
+        <Typography>
+          Welcome to the homepage. Select an option from the menu on the left to get started.
+        </Typography>
+      </Box>
+    </Box>
+  );
 }
 
-export default App
+export default App;

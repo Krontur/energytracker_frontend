@@ -1,6 +1,7 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, CssBaseline, Box } from '@mui/material';
 import { Home, Group, ElectricMeter, HomeMax } from '@mui/icons-material';
+import Users from './user/components/users';
 import logo from './assets/logoenergytracker.png';
 import background from './assets/backgroundET.png';
 
@@ -51,15 +52,15 @@ function App() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              height: '100vh',
               paddingTop: 15
           }}
       >
-        <Box component="img" src={background} alt="Energy Tracker Background" sx={{ width: '100%', objectFit: 'contain' }} />
+        <Box component="img" src={background} alt="Energy Tracker Background" sx={{ width: '100%', objectFit: 'contain', maxWidth: '1280px' }} />
         <Toolbar />
         <Typography>
           Welcome to the homepage. Select an option from the menu on the left to get started.
         </Typography>
+        <Users />
       </Box>
     </Box>
   );

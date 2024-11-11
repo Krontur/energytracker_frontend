@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, TextField, Button, FormControl, InputLabel, OutlinedInput, FormHelperText, IconButton, InputAdornment } from '@mui/material';
+import { Box, TextField, Button, FormControl, InputLabel, OutlinedInput, Switch,
+         FormHelperText, IconButton, InputAdornment, Select, MenuItem, FormLabel, FormControlLabel } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
 
@@ -7,10 +8,25 @@ import { useState } from 'react';
 const UserForm = () => {
 
     const [user, setUser] = useState({
-        name: '',
+        userAccountId: null,
+        fullName: '',
         email: '',
-        password: ''
+        password: '',
+        role: '',
+        active: false
       });
+
+    const [showPassword, setShowPassword] = useState(false);
+    
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+    
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(user);
+    };
+
 
     return (
         <Box
@@ -31,6 +47,7 @@ const UserForm = () => {
         >
             <h2>Create New User</h2>
             <Box
+                component={'form'}
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -41,6 +58,13 @@ const UserForm = () => {
                     borderRadius: 1,
                 }}
             >
+                <TextField
+                    label="userAccountId"
+                    variant="outlined"
+                    value={user.userAccountId}
+                    disabled
+                />
+
                 <TextField
                     label="Full Name"
                     variant="outlined"
@@ -73,15 +97,59 @@ const UserForm = () => {
                     />
                 </FormControl>
 
-                <TextField
-                    label="Password"
-                    variant="outlined"
-                    value={user.password}
-                    onChange={(e) => setUser({ ...user, password: e.target.value })}
-                />
+                <FormControl variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-password">Repeat Password</InputLabel>
+                    <OutlinedInput
+                        id="outlined-adornment-password"
+                        type={user.showPassword ? 'text' : 'password'}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setUser({ ...user, showPassword: !user.showPassword })}
+                                    edge="end"
+                                >
+                                    {user.showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        }
+                        label="Password"
+                    />
+                </FormControl>
+
+                <FormControl variant="outlined">
+                    <InputLabel id="role-select-outlined-label">Role</InputLabel>
+                    <Select
+                        labelId="role-select-outlined-label"
+                        id="role-select-outlined"
+                        value={user.role}
+                        label="Role"
+                        onChange={(e) => setUser({ ...user, role: e.target.value })}
+                    >
+                        <MenuItem value="ADMIN">Administrator</MenuItem>
+                        <MenuItem value="USER">User</MenuItem>
+                    </Select>
+                    <FormHelperText>Select the role for the user</FormHelperText>
+                </FormControl>
+
+                
+                <FormControl variant="outlined">
+                    <FormLabel component="legend">User active?</FormLabel>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                type="checkbox"
+                                checked={user.active}
+                                onChange={(e) => setUser({ ...user, active: e.target.checked })}
+                            />
+                        }
+                        label="Active"
+                    />
+                </FormControl>
+
                 <Button
                     variant="contained"
-                    onClick={() => console.log(user)}
+                    onClick={() => handleSubmit()}
                 >
                     Submit
                 </Button>

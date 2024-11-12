@@ -1,26 +1,19 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { createTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import TimelineIcon from '@mui/icons-material/Timeline';
 import User from '@mui/icons-material/Group';
 import ElectricMeter from '@mui/icons-material/ElectricMeter';
 import HomeMax from '@mui/icons-material/HomeMax';
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { useDemoRouter } from '@toolpad/core/internal';
-import { Height } from '@mui/icons-material';
+import { Outlet } from 'react-router-dom';
 
-// Definición de la navegación
 const NAVIGATION = [
   {
     kind: 'header',
     title: 'Main items',
   },
   {
-    segment: 'home',
     title: 'Home',
     icon: <DashboardIcon />,
   },
@@ -50,8 +43,7 @@ const BRANDING = {
       ),
   };
 
-// Definición del tema personalizado
-const demoTheme = createTheme({
+const theme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-toolpad-color-scheme',
   },
@@ -67,41 +59,15 @@ const demoTheme = createTheme({
   },
 });
 
-// Componente de contenido de página
-function DemoPageContent({ pathname }) {
-  return (
-    <Box
-      sx={{
-        py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
-      <Typography>Dashboard content for {pathname}</Typography>
-    </Box>
-  );
-}
-
-DemoPageContent.propTypes = {
-  pathname: PropTypes.string.isRequired,
-};
-
-// Componente principal de la aplicación
 function CustomAppProvider() {
-  const router = useDemoRouter('/page');
 
   return (
     <AppProvider
       navigation={NAVIGATION}
       branding={BRANDING}
-      router={router}
-      theme={demoTheme}
+      theme={theme}
     >
-      <DashboardLayout>
-        <DemoPageContent pathname={router.pathname} />
-      </DashboardLayout>
+      <Outlet />
     </AppProvider>
   );
 }

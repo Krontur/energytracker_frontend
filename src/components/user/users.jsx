@@ -1,8 +1,6 @@
 import React from 'react';
 import UserList from './userlist';
-import UserForm from './userform';
 import { Box } from '@mui/material';
-import Modal from '@mui/material/Modal';
 
 
 const Users = () => {
@@ -14,16 +12,15 @@ const Users = () => {
                 p: 3,
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'flex-start',
-                height: '100vh',
-                paddingTop: 15,
-                width: '100vh',
-                alignItems: 'center'
+                width: '90%',
+                alignItems: 'center',
+                minWidth: '480px',
+                height: 'auto',
+                margin: '0 auto'
             }}
          >
-            Users
+            <h2>Users</h2>
             <UserList />
-            <UserForm />
         </Box>
     );
 }

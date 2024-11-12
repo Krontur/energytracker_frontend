@@ -2,13 +2,14 @@ import React from 'react';
 import { Box, TextField, Button, FormControl, InputLabel, OutlinedInput, Switch,
          FormHelperText, IconButton, InputAdornment, Select, MenuItem, FormLabel, FormControlLabel } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Modal from '@mui/material/Modal';
 import { useState } from 'react';
 
 
-const UserForm = () => {
+const UserForm = (  ) => {
 
     const [user, setUser] = useState({
-        userAccountId: null,
+        userAccountId: '',
         fullName: '',
         email: '',
         password: '',
@@ -17,9 +18,14 @@ const UserForm = () => {
       });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordRepeat, setShowPasswordRepeat] = useState(false);
     
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
+    };
+
+    const handleClickShowPasswordRepeat = () => {
+        setShowPasswordRepeat(!showPasswordRepeat);
     };
     
     const handleSubmit = (e) => {
@@ -81,15 +87,15 @@ const UserForm = () => {
                     <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
-                        type={user.showPassword ? 'text' : 'password'}
+                        type={showPassword ? 'text' : 'password'}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
                                     aria-label="toggle password visibility"
-                                    onClick={() => setUser({ ...user, showPassword: !user.showPassword })}
+                                    onClick={() => handleClickShowPassword()}
                                     edge="end"
                                 >
-                                    {user.showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
                         }
@@ -101,15 +107,15 @@ const UserForm = () => {
                     <InputLabel htmlFor="outlined-adornment-password">Repeat Password</InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-password"
-                        type={user.showPassword ? 'text' : 'password'}
+                        type={showPasswordRepeat ? 'text' : 'password'}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
                                     aria-label="toggle password visibility"
-                                    onClick={() => setUser({ ...user, showPassword: !user.showPassword })}
+                                    onClick={() => handleClickShowPasswordRepeat()}
                                     edge="end"
                                 >
-                                    {user.showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPasswordRepeat ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
                         }

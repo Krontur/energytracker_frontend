@@ -2,9 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import CustomAppProvider from './CustomAppProvider.jsx';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import Dashboard from './layouts/dashboard.jsx';
 import Users from './components/user/users.jsx';
 import Home from './pages/Home.jsx';
+import App from './layouts/App.jsx';
 
 const router = createBrowserRouter([
   {
@@ -12,15 +12,23 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        Component: Dashboard,
+        Component: App,
         children: [
           {
             path: '',
-            Component: Home,
+            element: <Home />,
           },
           {
             path: '/users',
-            Component: Users,
+            element: <Users />,
+          },
+          {
+            path: 'meters',
+            element: <div>Meters Page</div>,
+          },
+          {
+            path: 'stations',
+            element: <div>Stations Page</div>,
           },
         ],
       },
@@ -41,6 +49,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <RouterProvider router={router}/>
   </StrictMode>,
 )

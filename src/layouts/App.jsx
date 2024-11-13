@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 
 
-const Dashboard = () => {
+const App = () => {
     return (
         <DashboardLayout>
             <Outlet />
@@ -11,4 +11,4 @@ const Dashboard = () => {
     );
 }
 
-export default Dashboard;
+export default App;

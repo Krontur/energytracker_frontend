@@ -7,6 +7,10 @@ import ElectricMeter from '@mui/icons-material/ElectricMeter';
 import HomeMax from '@mui/icons-material/HomeMax';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const NAVIGATION = [
   {
@@ -16,21 +20,25 @@ const NAVIGATION = [
   {
     title: 'Home',
     icon: <DashboardIcon />,
+    path: '/',
   },
   {
     segment: 'users',
     title: 'Users',
     icon: <User />,
+    path: '/users',
   },
   {
     segment: 'meters',
     title: 'Meters',
     icon: <ElectricMeter />,
+    path: '/meters',
   },
   {
     segment: 'stations',
     title: 'Stations',
     icon: <HomeMax />,
+    path: '/stations',
   },
 ];
 
@@ -59,12 +67,40 @@ const theme = createTheme({
   },
 });
 
+
+
+function useRouter(initialPath) {
+
+  const [pathname, setPathname] = React.useState(initialPath);
+
+  const router = React.useMemo(() => {
+    return {
+      pathname,
+      searchParams: new URLSearchParams(),
+      navigate: (path) => setPathname(String(path)),
+    };
+  }, [pathname]);
+
+  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate(pathname);
+  }, [pathname, navigate]);
+
+
+  return router;
+}
+
 function CustomAppProvider() {
+  const location = useLocation();
+  const router = useRouter(location.pathname);
 
   return (
     <AppProvider
       navigation={NAVIGATION}
       branding={BRANDING}
+      router={router}
       theme={theme}
     >
       <Outlet />

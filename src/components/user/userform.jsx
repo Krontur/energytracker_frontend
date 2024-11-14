@@ -3,9 +3,12 @@ import { Box, TextField, Button, FormControl, InputLabel, OutlinedInput, Switch,
          FormHelperText, IconButton, InputAdornment, Select, MenuItem, FormLabel, FormControlLabel } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
-const UserForm = (  ) => {
+const UserForm = ({ onClose }) => {
+
+    const navigate = useNavigate();
 
     const [passwordRepeat, setPasswordRepeat] = useState('');
     const [password, setPassword] = useState('');
@@ -20,7 +23,6 @@ const UserForm = (  ) => {
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
     const [passwordRepeatError, setPasswordRepeatError] = useState(false);
     const [passwordRepeatErrorMessage, setPasswordRepeatErrorMessage] = useState('');
-    const [activeError, setActiveError] = useState(false);
 
     const [user, setUser] = useState({
         userAccountId: '',
@@ -28,7 +30,7 @@ const UserForm = (  ) => {
         email: '',
         password: '',
         role: '',
-        active: false
+        isActive: false
       });
 
     const validateForm = () => {
@@ -43,40 +45,36 @@ const UserForm = (  ) => {
             setFullNameErrorMessage('');
         }
 
-        if (!user.email) {
-            setEmailError(true);
-            setEmailErrorMessage('Email is required');
+        if (!handleEmailValidation(user.email)) {
+            isValid = false;
+        }
+
+        if (password === '') {
+            setPasswordError(true);
+            setPasswordErrorMessage('Password is required');
             isValid = false;
         } else {
-            handleEmailValidation({ target: { value: user.email } });
+            setPasswordError(false);
+            setPasswordErrorMessage('');
         }
-        
+
+        if (passwordRepeat === '') {
+            setPasswordRepeatError(true);
+            setPasswordRepeatErrorMessage('Password is required');
+            isValid = false;
+        } else {
+            setPasswordRepeatError(false);
+            setPasswordRepeatErrorMessage('');
+        }
+
         if (user.password !== passwordRepeat) {
-            setPasswordError(true);
-            setPasswordErrorMessage('Passwords do not match');
             setPasswordRepeatError(true);
             setPasswordRepeatErrorMessage('Passwords do not match');
             isValid = false;
         } else {
-            if (user.password === '') {
-                setPasswordError(true);
-                setPasswordErrorMessage('Password is required');
-                isValid = false;
-            } else {
-                setPasswordError(false);
-                setPasswordErrorMessage('');
-            }
-            if (passwordRepeat === '') {
-                setPasswordRepeatError(true);
-                setPasswordRepeatErrorMessage('Password Repeat is required');
-                isValid = false;
-            } else {
-                setPasswordRepeatError(false);
-                setPasswordRepeatErrorMessage('');
-            }
+            setPasswordRepeatError(false);
+            setPasswordRepeatErrorMessage('');
         }
-
-        
 
         if (!user.role) {
             setRoleError(true);
@@ -85,20 +83,32 @@ const UserForm = (  ) => {
             setRoleError(false);
         }
 
-        if (user.active == null) {
-            setActiveError(true);
-            isValid = false;
-        } else {
-            setActiveError(false);
-        }
-
         return isValid;
     };
 
-    const handleSubmit = (e) => {
+    async function handleSubmit (e) {
         e.preventDefault();
         if (validateForm()) {
-            console.log(user);
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(user),
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Success:', data);
+                    onClose();
+                    navigate('/users');
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error:', errorData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
     };
     
@@ -109,17 +119,26 @@ const UserForm = (  ) => {
     const handleClickShowPasswordRepeat = () => {
         setShowPasswordRepeat(!showPasswordRepeat);
     };
-    
-    const handleEmailValidation = () => {
+
+    const handleEmailValidation = (email) => {
+        let isEmailValid = true;
+
         const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
-        if (!emailRegex.test(user.email)) {
+        if (email === '') {
             setEmailError(true);
-            setEmailErrorMessage('Please enter a valid email address');
-            return;
+            setEmailErrorMessage('Email is required');
+            isEmailValid = false;
+        } else if (!emailRegex.test(email)) {
+                setEmailError(true);
+                setEmailErrorMessage('Please enter a valid email address');
+                isEmailValid = false;;
+        } else {
+            setEmailError(false);
+            setEmailErrorMessage('');
         }
-        setEmailError(false);
-        setEmailErrorMessage('');
+        return isEmailValid;
+        
     }
 
 
@@ -174,7 +193,12 @@ const UserForm = (  ) => {
                     value={user.email}
                     onChange={(e) => {
                         setUser({ ...user, email: e.target.value })
-                        handleEmailValidation();
+                        handleEmailValidation(e.target.value);
+                    }}
+                    onKeyUp={(e) => {
+                        if (e.key === 'Enter') {
+                            handleEmailValidation(e.target.value);
+                            }
                     }}
                     required={true}
                     error={emailError || undefined}
@@ -269,10 +293,9 @@ const UserForm = (  ) => {
                         control={
                             <Switch
                                 type="checkbox"
-                                checked={user.active}
-                                onChange={(e) => setUser({ ...user, active: e.target.checked })}
-                                required
-                                error={activeError}
+                                checked={user.isActive}
+                                onChange={(e) => setUser({ ...user, isActive: e.target.checked })}
+                                required={true}
                             />
                         }
                         label="Active"

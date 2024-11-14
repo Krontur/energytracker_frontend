@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, ButtonGroup, Button } from '@mui/material';
 import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UserForm from './userform';
 import Modal from '@mui/material/Modal';
 
-
+/*
 const users = [
     {
       fullName: "Alice Smith",
@@ -23,14 +23,40 @@ const users = [
       password: "mypassword"
     }
   ];
-
+*/
   
 
 const UserList = () => {
+
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        handleFetchUsers();
+    } , []);
     
     const handleClose = () => {
         setCreateUserModal(false);
     };
+
+    const handleFetchUsers = async () => {
+        console.log('fetching users');
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/users', {
+                method: 'GET',
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                setUsers(data);
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
 
     const [ createUserModal, setCreateUserModal ] = useState(false);
 
@@ -55,9 +81,20 @@ const UserList = () => {
                       bgcolor: 'background.paper' }}
             >
                 {users.map((user, index) => (
-                    <ListItem key={index}>
+                    <ListItem key={user.userAccountId}
+                        sx={{ 
+                            display: 'flex',
+                            width: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '10px 16px',
+                            }}
+                    >
                         <ListItemButton>
+                            <ListItemText primary={user.userAccountId} />
                             <ListItemText primary={user.fullName} secondary={user.email} />
+                            <ListItemText primary={user.role} />
+                            <ListItemText primary={user.createdDate} />
                             <ListItemIcon>
                                 <ButtonGroup>
                                     <IconButton onClick={() => console.log(index)}>
@@ -75,7 +112,7 @@ const UserList = () => {
                     </ListItem>
                 ))}
             </List>
-            <Modal open={createUserModal} onClose={handleClose}>
+            <Modal open={createUserModal} >
                 <Box
                 sx={{
                     position: 'absolute',
@@ -96,7 +133,7 @@ const UserList = () => {
                     <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
                         <Close />
                     </IconButton>
-                    <UserForm />
+                    <UserForm onClose={handleClose}/>
                 </Box>
             </Modal>
         </Box>

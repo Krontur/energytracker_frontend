@@ -1,8 +1,8 @@
-import React from 'react';
 import { Box, TextField, Button, FormControl, InputLabel, OutlinedInput, Switch,
          FormHelperText, IconButton, InputAdornment, Select, MenuItem, FormLabel, FormControlLabel } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -313,5 +313,8 @@ const UserForm = ({ onClose }) => {
     );
 
 }
+UserForm.propTypes = {
+    onClose: PropTypes.func.isRequired,
+};
 
 export default UserForm;

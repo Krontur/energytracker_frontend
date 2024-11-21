@@ -1,4 +1,3 @@
-import React from 'react';
 import { Toolbar, Typography, Box } from '@mui/material';
 import background from '../assets/backgroundET.png';
 

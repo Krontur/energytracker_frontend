@@ -1,19 +1,22 @@
 import { Box, List, ListItem, ListItemIcon, ListItemText, IconButton, ButtonGroup, Button } from '@mui/material';
 import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
-import UserForm from './userform';
+import UserForm from './Userform';
 import Modal from '@mui/material/Modal';
+import UserModal from './UserModal';
 
 const UserList = () => {
 
     const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState({});
 
     useEffect(() => {
         handleFetchUsers();
     } , []);
     
     const handleClose = () => {
-        setCreateUserModal(false);
+        setCreateUserFormModal(false);
+        setViewUserFormModal(false);
     };
 
     const handleFetchUsers = async () => {
@@ -36,7 +39,8 @@ const UserList = () => {
     };
 
 
-    const [ createUserModal, setCreateUserModal ] = useState(false);
+    const [ createUserFormModal, setCreateUserFormModal ] = useState(false);
+    const [ viewUserFormModal, setViewUserFormModal ] = useState(false);
 
     return (
         <Box sx={{  p: 1,
@@ -55,7 +59,7 @@ const UserList = () => {
                 alignItems: 'end'
             }}>
                 <Button
-                    onClick={() => setCreateUserModal(true)}
+                    onClick={() => setCreateUserFormModal(true)}
                 >new</Button>                
             </ButtonGroup>
             <List
@@ -161,7 +165,10 @@ const UserList = () => {
                                     <IconButton onClick={() => console.log(index)}>
                                         <Edit />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(index)}>
+                                    <IconButton onClick={() => {
+                                        setSelectedUser(user);
+                                        setViewUserFormModal(true)
+                                    }}>
                                         <Visibility />
                                     </IconButton>
                                 </ButtonGroup>
@@ -170,7 +177,7 @@ const UserList = () => {
                     </ListItem>
                 ))}
             </List>
-            <Modal open={createUserModal} >
+            <Modal open={createUserFormModal} >
                 <Box
                 sx={{
                     position: 'absolute',
@@ -194,6 +201,7 @@ const UserList = () => {
                     <UserForm onClose={handleClose}/>
                 </Box>
             </Modal>
+            <UserModal open={viewUserFormModal} user={selectedUser} onClose={handleClose}/>
         </Box>
     );
 }

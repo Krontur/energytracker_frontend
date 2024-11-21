@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import CustomAppProvider from './CustomAppProvider.jsx';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Users from './components/user/users.jsx';
+import Meters from './components/meter/meters.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
 
@@ -23,8 +24,8 @@ const router = createBrowserRouter([
             element: <Users />,
           },
           {
-            path: 'meters',
-            element: <div>Meters Page</div>,
+            path: '/meters',
+            element: <Meters />,
           },
           {
             path: 'stations',

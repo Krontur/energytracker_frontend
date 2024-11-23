@@ -4,7 +4,9 @@ import CustomAppProvider from './CustomAppProvider.jsx';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Users from './components/user/Users.jsx';
 import Meters from './components/meter/Meters.jsx';
+import Stations from './components/station/Stations.jsx';
 import EnergyMeterInfo from './components/meter/MeterInfo.jsx';
+import StationInfo from './components/station/StationInfo.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
 
@@ -33,8 +35,12 @@ const router = createBrowserRouter([
             element: <EnergyMeterInfo />,
           },
           {
-            path: 'stations',
-            element: <div>Stations Page</div>,
+            path: '/stations',
+            element: <Stations />,
+          },
+          {
+            path: '/stations/:id',
+            element: <StationInfo />,
           },
         ],
       },

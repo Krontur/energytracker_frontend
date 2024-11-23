@@ -110,7 +110,7 @@ const MeterForm = ({ onClose }) => {
                     borderRadius: 1,
                 }}
             >
-                {/* Campo para el ID del medidor, ocupa las dos columnas */}
+                
                 <TextField
                     label="Energy Meter ID"
                     variant="outlined"
@@ -119,7 +119,6 @@ const MeterForm = ({ onClose }) => {
                     fullWidth
                 />
 
-                {/* Número de serie */}
                 <TextField
                     label="Serial Number"
                     variant="outlined"
@@ -138,7 +137,6 @@ const MeterForm = ({ onClose }) => {
                     helperText={serialNumberErrorMessage}
                 />
 
-                {/* Tipo de medidor */}
                 <FormControl variant="outlined">
                     <InputLabel id="energy-meter-type-label">Energy Meter Type</InputLabel>
                     <Select
@@ -164,7 +162,6 @@ const MeterForm = ({ onClose }) => {
                     </FormHelperText>
                 </FormControl>
 
-                {/* Tipo de conexión */}
                 <FormControl variant="outlined">
                     <InputLabel id="connection-type-label">Connection Type</InputLabel>
                     <Select
@@ -192,7 +189,6 @@ const MeterForm = ({ onClose }) => {
                     </FormHelperText>
                 </FormControl>
 
-                {/* Dirección de conexión */}
                 <TextField
                     label="Connection Address"
                     variant="outlined"
@@ -211,7 +207,6 @@ const MeterForm = ({ onClose }) => {
                     helperText={connectionAddressErrorMessage}
                 />
 
-                {/* Corriente máxima */}
                 <TextField
                     type="number"
                     label="Max Current"
@@ -230,7 +225,6 @@ const MeterForm = ({ onClose }) => {
                     helperText={maxCurrentErrorMessage}
                 />
 
-                {/* Voltaje de referencia */}
                 <TextField
                     type="number"
                     label="Reference Voltage"
@@ -249,7 +243,6 @@ const MeterForm = ({ onClose }) => {
                     helperText={referenceVoltageErrorMessage}
                 />
 
-                {/* Año de aprobación MID */}
                 <TextField
                     type="number"
                     label="MID Approval Year"
@@ -268,7 +261,6 @@ const MeterForm = ({ onClose }) => {
                     helperText={midApprovalYearErrorMessage}
                 />
 
-                {/* Botón de enviar, ocupa las dos columnas */}
                 <Button
                     variant="contained"
                     onClick={(e) => handleSubmit(e)}

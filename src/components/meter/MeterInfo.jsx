@@ -1,9 +1,11 @@
 import { Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Box } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const MeterInfo = () => {
+
+  const { id } = useParams();
 
   const [meterInfo, setMeterInfo] = useState({});
   const [calibrations, setCalibrations] = useState([]);
@@ -91,10 +93,10 @@ const MeterInfo = () => {
           </TableHead>
           <TableBody>
             {calibrations.map((calibration) => (
-              <TableRow key={calibration.id}>
-                <TableCell>{calibration.id}</TableCell>
+              <TableRow key={calibration.calibrationId}>
+                <TableCell>{calibration.calibrationId}</TableCell>
                 <TableCell>{calibration.calibrationFrequencyInYears}</TableCell>
-                <TableCell>{calibration.calibration_status}</TableCell>
+                <TableCell>{calibration.calibrationStatus}</TableCell>
                 <TableCell>{new Date(calibration.lastCalibrationDate).toLocaleDateString()}</TableCell>
                 <TableCell>{new Date(calibration.nextCalibrationDate).toLocaleDateString()}</TableCell>
                 <TableCell>{calibration.comments}</TableCell>
@@ -105,11 +107,6 @@ const MeterInfo = () => {
       </TableContainer>
     </Container>
   );
-};
-
-MeterInfo.propTypes = {
-    meterInfo: PropTypes.object.isRequired,
-    calibrations: PropTypes.array.isRequired
 };
 
 export default MeterInfo;

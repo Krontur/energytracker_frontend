@@ -103,7 +103,7 @@ const MeterList = () => {
                     </Box>
                 </ListItem>
 
-                {meters.map((meter, index) => (
+                {meters.map((meter) => (
                     <ListItem key={meter.energyMeterId}
                         sx={{ 
                             display: 'flex',
@@ -160,16 +160,17 @@ const MeterList = () => {
                         >
                             <ListItemIcon>
                                 <ButtonGroup>
-                                    <IconButton onClick={() => console.log(index)}>
+                                    <IconButton onClick={() => console.log(meter.energyMeterId)}>
                                         <Delete />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(index)}>
+                                    <IconButton onClick={() => console.log(meter.energyMeterId)}>
                                         <Edit />
                                     </IconButton>
                                     <IconButton onClick={() =>
                                         {
                                             setSelectedMeter(meter);
-                                            navigate(`/meters/${meter.id}`);
+                                            console.log(selectedMeter);
+                                            navigate(`/meters/${meter.energyMeterId}`);
                                         }
                                     }>
                                         <Visibility />

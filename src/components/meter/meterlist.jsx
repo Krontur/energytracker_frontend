@@ -1,12 +1,16 @@
 import { Box, List, ListItem, ListItemIcon, ListItemText, IconButton, ButtonGroup, Button } from '@mui/material';
 import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
-import MeterForm from './meterform';
+import { useNavigate } from 'react-router-dom';
+import MeterForm from './MeterForm';
 import Modal from '@mui/material/Modal';
 
 const MeterList = () => {
 
+    const navigate = useNavigate();
+
     const [meters, setMeters] = useState([]);
+    const [selectedMeter, setSelectedMeter] = useState({});
 
     useEffect(() => {
         handleFetchMeters();
@@ -100,7 +104,7 @@ const MeterList = () => {
                 </ListItem>
 
                 {meters.map((meter, index) => (
-                    <ListItem key={meter.id}
+                    <ListItem key={meter.energyMeterId}
                         sx={{ 
                             display: 'flex',
                             alignItems: 'center',
@@ -162,7 +166,12 @@ const MeterList = () => {
                                     <IconButton onClick={() => console.log(index)}>
                                         <Edit />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(index)}>
+                                    <IconButton onClick={() =>
+                                        {
+                                            setSelectedMeter(meter);
+                                            navigate(`/meters/${meter.id}`);
+                                        }
+                                    }>
                                         <Visibility />
                                     </IconButton>
                                 </ButtonGroup>

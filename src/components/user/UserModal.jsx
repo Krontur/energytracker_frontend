@@ -1,14 +1,4 @@
-import { 
-  Modal, 
-  Box, 
-  Typography, 
-  Avatar, 
-  Chip,
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton
-} from '@mui/material';
+import { Modal, Box, Typography, Avatar, Chip, Card, CardContent, CardHeader, IconButton } from '@mui/material';
 import { Person as PersonIcon, Close as CloseIcon } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 import { grey } from '@mui/material/colors';
@@ -40,13 +30,13 @@ const UserModal = ({ open, onClose, user }) => {
           position: 'absolute',
           right: 8,
           top: 8,
-          color: grey[500], // Usa el import de Material-UI en lugar del tema
+          color: grey[500],
         }}
       >
         <CloseIcon />
       </IconButton>
       <Typography variant="h6" component="h2" sx={{ textAlign: 'center', mt: 2 }}>
-        Detalles del usuario
+        User Details
       </Typography>
         <Card>
           <CardHeader
@@ -77,7 +67,13 @@ const UserModal = ({ open, onClose, user }) => {
               <strong>Email:</strong> {user.email}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Rol:</strong> {user.role}
+              <strong>Role:</strong> {user.role}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Creation Date:</strong> {user.createdDate}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Last Update:</strong> {user.updatedDate}
             </Typography>
           </CardContent>
         </Card>

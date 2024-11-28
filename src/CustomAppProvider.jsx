@@ -1,16 +1,9 @@
-import React from 'react';
 import Box from '@mui/material/Box';
 import { createTheme } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import User from '@mui/icons-material/Group';
-import ElectricMeter from '@mui/icons-material/ElectricMeter';
-import HomeMax from '@mui/icons-material/HomeMax';
+import { Dashboard, Group, ElectricMeter, HomeMax, Bolt } from '@mui/icons-material';
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { Outlet } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 
 const NAVIGATION = [
   {
@@ -19,13 +12,13 @@ const NAVIGATION = [
   },
   {
     title: 'Home',
-    icon: <DashboardIcon />,
+    icon: <Dashboard />,
     path: '/',
   },
   {
     segment: 'users',
     title: 'Users',
-    icon: <User />,
+    icon: <Group />,
     path: '/users',
   },
   {
@@ -40,6 +33,12 @@ const NAVIGATION = [
     icon: <HomeMax />,
     path: '/stations',
   },
+  {
+    segment: 'metering-points',
+    title: 'Metering Points',
+    icon: <Bolt />,
+    path: '/metering-points',
+  }
 ];
 
 const BRANDING = {
@@ -71,9 +70,9 @@ const theme = createTheme({
 
 function useRouter(initialPath) {
 
-  const [pathname, setPathname] = React.useState(initialPath);
+  const [pathname, setPathname] = useState(initialPath);
 
-  const router = React.useMemo(() => {
+  const router = useMemo(() => {
     return {
       pathname,
       searchParams: new URLSearchParams(),

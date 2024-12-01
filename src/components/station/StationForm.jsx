@@ -30,7 +30,6 @@ const MeterForm = ({ onClose }) => {
         event.preventDefault();
         console.log(station);
         if (validateForm()) {
-            console.log('Form is valid');
             try {
                 const response = await fetch('http://localhost:8088/api/v1/stations', {
                     method: 'POST',
@@ -40,7 +39,6 @@ const MeterForm = ({ onClose }) => {
                     body: JSON.stringify(station),
                 });
                 if (response.ok) {
-                    console.log('Station created successfully');
                     onClose();
                 } else {
                     const errorData = await response.json();
@@ -50,7 +48,6 @@ const MeterForm = ({ onClose }) => {
                 console.error('Error:', error);
             }
         }
-        console.log('Form is invalid');
     };
 
     const validateFieldEmpty = (field) => {

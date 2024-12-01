@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, IconButton, List, ListItem, ListItemText, Modal, ListItemIcon } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, List, ListItem, ListItemText, Modal, ListItemIcon, FormControlLabel, Switch } from '@mui/material';
 import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import MeteringPointForm from './MeteringPointForm';
@@ -7,6 +7,7 @@ import MeteringPointForm from './MeteringPointForm';
 const MeteringPointList = () => {
 
     const [meteringPoints, setMeteringPoints] = useState([]);
+    const [stations, setStations] = useState([]);
     const [selectedMeteringPoint, setSelectedMeteringPoint] = useState({});
     const [createMeteringPointModal, setCreateMeteringPointModal] = useState(false);
 
@@ -14,6 +15,7 @@ const MeteringPointList = () => {
     
     useEffect(() => {
         handleFetchMeteringPoints();
+        handleFetchStations();
     }, []);
 
     const handleFetchMeteringPoints = async () => {
@@ -34,6 +36,17 @@ const MeteringPointList = () => {
             console.error('Error:', error);
         }
     }
+
+    const handleFetchStations = async () => {
+        try {
+            const response = await fetch('http://localhost:8088/api/v1/stations');
+            const data = await response.json();
+            setStations(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
 
     const handleClose = () => {
         setCreateMeteringPointModal(false);
@@ -130,30 +143,38 @@ const MeteringPointList = () => {
                                 textAlign: 'left' 
                             }}
                         />
-                        <ListItemText primary={meteringPoint.energyMeter.energMeterSerialNumber}
+                        <ListItemText primary={meteringPoint.energyMeter.serialNumber}
                             sx={{ 
                                 flex: '1 1 35%', 
                                 textAlign: 'left' 
                             }}
                         />
-                        <ListItemText primary={meteringPoint.station.stationTag} secondary={meteringPoint.channel.channelNumber}
+                        <ListItemText primary={stations.find((station) => station.stationId  === meteringPoint.channel.stationId)?.stationTag}
                             sx={{ 
                                 flex: '1 1 15%', 
                                 textAlign: 'left' 
                             }}
                         />
-                        <ListItemText primary={meteringPoint.activeStatus ? 'Active' : 'Inactive'}
+                        
+                        <ListItemText primary={meteringPoint.channel.channelNumber}
                             sx={{ 
                                 flex: '1 1 15%', 
                                 textAlign: 'left' 
                             }}
                         />
-                        <ListItemText primary={meteringPoint.activeStatus}
-                            sx={{ 
-                                flex: '1 1 15%', 
-                                textAlign: 'left' 
-                            }}
-                        />
+                        <FormControlLabel
+                                sx={{ 
+                                    flex: '1 1 15%', 
+                                    textAlign: 'left' 
+                                }}
+                                control={
+                                    <Switch
+                                        type="checkbox"
+                                        checked={meteringPoint.activeStatus}
+                                    />
+                                }
+                                label="Active"
+                            />
                     </Box>
                     <Box
                             sx={{

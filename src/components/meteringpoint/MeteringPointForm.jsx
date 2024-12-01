@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Box, TextField, Button, FormControl, Autocomplete, Switch, FormLabel, FormControlLabel } from '@mui/material';
+import PropTypes from 'prop-types';
 
-const MeteringPointForm = () => {
+const MeteringPointForm = ({ onClose }) => {
 
-    const [meteringPoint, setMeteringPoint] = useState({});
-    const [locationName, setLocationName] = useState('');
-    const [connectionDescription, setConnectionDescription] = useState('');
-    const [activeStatus, setActiveStatus] = useState(false);
-    const [selectedStation, setSelectedStation] = useState({});
-    const [selectedChannel, setSelectedChannel] = useState({});
-    const [selectedMeteringPoint, setSelectedMeteringPoint] = useState({});
-    const [selectedMeter, setSelectedMeter] = useState({});
+    const [meteringPoint, setMeteringPoint] = useState({
+
+        locationName: '',
+        connectionDescription: '',
+        parentMeteringPointId: null,
+        energyMeterId: '',
+        channelId: '',
+        activeStatus: true,
+
+    });
+    const [selectedStation, setSelectedStation] = useState(null);
+    const [selectedChannel, setSelectedChannel] = useState(null);
+    const [selectedMeteringPoint, setSelectedMeteringPoint] = useState(null);
+    const [selectedMeter, setSelectedMeter] = useState(null);
     const [stations, setStations] = useState([]);
     const [channels, setChannels] = useState([]);
     const [meteringpoints, setMeteringPoints] = useState([]);
@@ -20,6 +27,9 @@ const MeteringPointForm = () => {
     const [connectionDescriptionError, setConnectionDescriptionError] = useState(false);
     const [locationNameErrorMessage, setLocationNameErrorMessage] = useState('');
     const [connectionDescriptionErrorMessage, setConnectionDescriptionErrorMessage] = useState('');
+    const [energyMeterError, setEnergyMeterError] = useState(false);
+    const [stationError, setStationError] = useState(false);
+    const [channelError, setChannelError] = useState(false);
 
     useEffect(() => {
         handleFetchStations();
@@ -32,36 +42,69 @@ const MeteringPointForm = () => {
     }
 
     const validateForm = () => {
-        return validateFieldEmpty(locationName) || validateFieldEmpty(connectionDescription);
+        let isFormValid = true
+        if (validateFieldEmpty(meteringPoint.locationName)){
+            setLocationNameError(validateFieldEmpty(meteringPoint.locationName));
+            setLocationNameErrorMessage('Location Name is required');
+            isFormValid = false
+        }
+        if (validateFieldEmpty(meteringPoint.connectionDescription)){
+            setConnectionDescriptionError(validateFieldEmpty(meteringPoint.connectionDescription));
+            setConnectionDescriptionErrorMessage('Connection Description is required');
+            isFormValid = false
+        }
+        if (!selectedMeter){
+            setEnergyMeterError(true);
+            isFormValid = false;
+        }
+        if (!selectedStation){
+            setStationError(true);
+            isFormValid = false;
+        }
+        if (!selectedChannel){
+            setChannelError(true);
+            isFormValid = false;
+        }
+
+        return isFormValid;
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateForm()) {
-                console.log(meteringPoint);
-                console.log(locationName);
-                console.log(connectionDescription);
-                console.log(activeStatus);
-                console.log(selectedStation);
-                console.log(selectedChannel);
-                setMeteringPoint({
-                    locationName: locationName,
-                    connectionDescription: connectionDescription,
-                    activeStatus: activeStatus,
-                    station: selectedStation,
-                    channel: selectedChannel
-                    });
-            }
-            else {
-                alert('Please fill in all fields');
-                }
+    const handleSubmit = () => {
+        if (validateForm()) {
+            handleCreateMeteringPoint();
+        }
     }
+
+    const handleCreateMeteringPoint = async () => {
+        try {
+            const response = await fetch('http://localhost:8088/api/v1/metering-points', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(meteringPoint),
+            });
+            if (!response.ok) {
+                const errorResponse = await response.json().catch(() => {
+                    throw new Error('Error creating Metering Point');
+                });
+                console.error('Server error: ', errorResponse);
+                return;
+            }
+            const data = await response.json();
+            console.log(data);
+            onClose();
+            handleFetchMeteringPoints();
+        } catch (error) {
+            console.error('Error creating Metering Point: ', error);
+        }
+    }
+
 
     const handleFetchStations = async () => {
         try {
             const response = await fetch('http://localhost:8088/api/v1/stations');
             const data = await response.json();
-            console.log(data);
             setStations(data);
             } catch (error) {
                 console.error('Error:', error);
@@ -131,7 +174,7 @@ const MeteringPointForm = () => {
                     variant="outlined"
                     value={meteringPoint.locationName}
                     onChange={(e) => {
-                        setLocationName({ ...meteringPoint, locationName: e.target.value })
+                        setMeteringPoint({ ...meteringPoint, locationName: e.target.value })
                         if(validateFieldEmpty(e.target.value)){
                             setLocationNameError(true);
                             setLocationNameErrorMessage('Location Name is required');
@@ -148,7 +191,7 @@ const MeteringPointForm = () => {
                     label="Connection Description"
                     value={meteringPoint.connectionDescription}
                     onChange={(e) => {
-                        setConnectionDescription({ ...meteringPoint, connectionDescription: e.target.value })
+                        setMeteringPoint({ ...meteringPoint, connectionDescription: e.target.value })
                         if(validateFieldEmpty(e.target.value)){
                             setConnectionDescriptionError(true);
                             setConnectionDescriptionErrorMessage('Connection Description is required');
@@ -168,7 +211,7 @@ const MeteringPointForm = () => {
                             <Switch
                                 type="checkbox"
                                 checked={meteringPoint.activeStatus}
-                                onChange={(e) => setActiveStatus({ ...meteringPoint, activeStatus: e.target.checked })}
+                                onChange={(e) => setMeteringPoint({ ...meteringPoint, activeStatus: e.target.checked })}
                                 required={true}
                             />
                         }
@@ -181,9 +224,21 @@ const MeteringPointForm = () => {
                     getOptionLabel={(option) => option.serialNumber || ''}
                     value={selectedMeter}
                     onChange={(event, newValue) => {
-                        setSelectedMeter(newValue);
+                        if (!newValue) {
+                            setEnergyMeterError(true);
+                        } else {
+                            setMeteringPoint({ ...meteringPoint, energyMeterId: newValue.energyMeterId });
+                            setSelectedMeter(newValue);
+                            setEnergyMeterError(false);
+                        }
                     }}
-                    renderInput={(params) => <TextField {...params} label="Select Meter" variant="outlined" />}
+                    renderInput={(params) => 
+                        <TextField
+                            {...params}
+                            label="Select Meter"
+                            variant="outlined"
+                            error={energyMeterError || ''}
+                        />}
                 />
 
                 <Autocomplete
@@ -191,27 +246,53 @@ const MeteringPointForm = () => {
                     getOptionLabel={(option) => option.stationTag || ''}
                     value={selectedStation}
                     onChange={(event, newValue) => {
-                        setSelectedStation(newValue);
-                        setChannels(newValue.channelList);
+                        if (newValue) {
+                            setSelectedStation(newValue);
+                            setChannels(newValue.channelList);
+                            setStationError(false);
+                        } else {
+                            setSelectedStation({});
+                            setStationError(true);
+                        }
                     }}
-                    renderInput={(params) => <TextField {...params} label="Select Station" variant="outlined" />}
+                    renderInput={(params) =>
+                        <TextField
+                            {...params}
+                            label="Select Station"
+                            variant="outlined"
+                            error={stationError || ''}
+                        />}
                 />
 
                 <Autocomplete
-                    options={channels}
-                    getOptionLabel={(option) => option.channelNumber || ''}
+                    disabled={!channels || channels.length === 0}
+                    options={channels.filter((channel) => channel.lonIsActive === true)}
+                    getOptionLabel={(option) => option.channelNumber?.toString() || ''}
                     value={selectedChannel}
                     onChange={(event, newValue) => {
-                        setSelectedChannel(newValue);
+                        if (!newValue) {
+                            setChannelError(true);
+                        } else {
+                            setMeteringPoint({ ...meteringPoint, channelId: newValue.channelId });
+                            setSelectedChannel(newValue);
+                            setChannelError(false);
+                        }
                     }}
-                    renderInput={(params) => <TextField {...params} label="Select Channel" variant="outlined" />}
+                    renderInput={(params) =>
+                        <TextField
+                            {...params}
+                            label="Select Channel"
+                            variant="outlined"
+                            error={channelError || ''}
+                        />}
                 />
 
                 <Autocomplete
                     options={meteringpoints}
-                    getOptionLabel={(option) => option.meteringPointId || ''}
+                    getOptionLabel={(option) => option.meteringPointId?.toString() || ''}
                     value={selectedMeteringPoint}
                     onChange={(event, newValue) => {
+                        setMeteringPoint({ ...meteringPoint, parentMeteringPointId: newValue.meteringPointId });
                         setSelectedMeteringPoint(newValue);
                     }}
                     renderInput={(params) => <TextField {...params} label="Select Parent Metering Point" variant="outlined" />}
@@ -229,6 +310,10 @@ const MeteringPointForm = () => {
         </Box>
     );
 
+}
+
+MeteringPointForm.propTypes = {
+    onClose: PropTypes.func.isRequired,
 }
 
 export default MeteringPointForm;

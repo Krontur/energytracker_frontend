@@ -87,10 +87,11 @@ const MeteringPointList = () => {
                             alignItems: 'center',
                         }}
                     >
-                        <Box sx={{ flex: '1 1 20%', textAlign: 'left' }}>Energy Meter Serialnumber</Box>
-                        <Box sx={{ flex: '1 1 30%', textAlign: 'left' }}>Station Tag</Box>
-                        <Box sx={{ flex: '1 1 30%', textAlign: 'left' }}>Channelnumber</Box>
-                        <Box sx={{ flex: '1 1 20%', textAlign: 'left' }}>Status</Box>
+                        <Box sx={{ flex: '1 1 20%', textAlign: 'left' }}>Metering Point</Box>
+                        <Box sx={{ flex: '1 1 35%', textAlign: 'left' }}>Energymeter Serialnumber</Box>
+                        <Box sx={{ flex: '1 1 15%', textAlign: 'left' }}>Station Tag</Box>
+                        <Box sx={{ flex: '1 1 15%', textAlign: 'left' }}>Channel</Box>
+                        <Box sx={{ flex: '1 1 15%', textAlign: 'left' }}>Status</Box>
                     </Box>
                     <Box sx={{
                                 display: 'flex',
@@ -123,27 +124,33 @@ const MeteringPointList = () => {
                             }
                         }
                     >
-                        <ListItemText primary={meteringPoint.energyMeter.energMeterSerialNumber}
+                        <ListItemText primary={meteringPoint.meteringPointId}
                             sx={{ 
                                 flex: '1 1 20%', 
+                                textAlign: 'left' 
+                            }}
+                        />
+                        <ListItemText primary={meteringPoint.energyMeter.energMeterSerialNumber}
+                            sx={{ 
+                                flex: '1 1 35%', 
                                 textAlign: 'left' 
                             }}
                         />
                         <ListItemText primary={meteringPoint.station.stationTag} secondary={meteringPoint.channel.channelNumber}
                             sx={{ 
-                                flex: '1 1 30%', 
+                                flex: '1 1 15%', 
                                 textAlign: 'left' 
                             }}
                         />
                         <ListItemText primary={meteringPoint.activeStatus ? 'Active' : 'Inactive'}
                             sx={{ 
-                                flex: '1 1 30%', 
+                                flex: '1 1 15%', 
                                 textAlign: 'left' 
                             }}
                         />
                         <ListItemText primary={meteringPoint.activeStatus}
                             sx={{ 
-                                flex: '1 1 20%', 
+                                flex: '1 1 15%', 
                                 textAlign: 'left' 
                             }}
                         />

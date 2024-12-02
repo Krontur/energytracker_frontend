@@ -220,7 +220,7 @@ const MeteringPointForm = ({ onClose }) => {
                 </FormControl>
 
                 <Autocomplete
-                    options={meters}
+                    options={meters.filter((meter) => meter.deviceStatus === 'IN_STOCK').sort((a, b) => a.serialNumber.localeCompare(b.serialNumber))}
                     getOptionLabel={(option) => option.serialNumber || ''}
                     value={selectedMeter}
                     onChange={(event, newValue) => {
@@ -242,7 +242,7 @@ const MeteringPointForm = ({ onClose }) => {
                 />
 
                 <Autocomplete
-                    options={stations}
+                    options={stations.filter((station) => station.deviceStatus === 'IN_STOCK').sort((a, b) => a.stationTag.localeCompare(b.stationTag))}
                     getOptionLabel={(option) => option.stationTag || ''}
                     value={selectedStation}
                     onChange={(event, newValue) => {
@@ -266,7 +266,7 @@ const MeteringPointForm = ({ onClose }) => {
 
                 <Autocomplete
                     disabled={!channels || channels.length === 0}
-                    options={channels.filter((channel) => channel.lonIsActive === true)}
+                    options={channels.filter((channel) => channel.lonIsActive === false).sort((a, b) => a.channelNumber - b.channelNumber)}
                     getOptionLabel={(option) => option.channelNumber?.toString() || ''}
                     value={selectedChannel}
                     onChange={(event, newValue) => {

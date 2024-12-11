@@ -24,7 +24,7 @@ const MeterList = () => {
     const handleFetchMeters = async () => {
         console.log('fetching meters');
         try {
-            const response = await fetch('http://localhost:8088/api/v1/meters', {
+            const response = await fetch('http://localhost:8080/api/v1/meters', {
                 method: 'GET',
             });
             if (response.ok) {

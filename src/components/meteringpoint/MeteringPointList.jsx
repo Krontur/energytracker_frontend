@@ -20,7 +20,7 @@ const MeteringPointList = () => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/metering-points',
+            const response = await fetch('http://localhost:8080/api/v1/metering-points',
                 {
                 method: 'GET',
                 }
@@ -39,7 +39,7 @@ const MeteringPointList = () => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/stations');
+            const response = await fetch('http://localhost:8080/api/v1/stations');
             const data = await response.json();
             setStations(data);
         } catch (error) {

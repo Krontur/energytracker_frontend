@@ -38,7 +38,7 @@ const MeterForm = ({ onClose }) => {
         if (validateForm()) {
             console.log('Form is valid');
             try {
-                const response = await fetch('http://localhost:8088/api/v1/meters', {
+                const response = await fetch('http://localhost:8080/api/v1/meters', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ const MeterForm = ({ onClose }) => {
                 <TextField
                     label="Energy Meter ID"
                     variant="outlined"
-                    value={meter.energyMeterId}
+                    value={meter.energyMeterId ? meter.energyMeterId : ""}
                     disabled
                     fullWidth
                 />

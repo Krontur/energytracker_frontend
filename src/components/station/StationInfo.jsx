@@ -12,7 +12,7 @@ const StationInfo = () => {
 
     const handleFetchStationInfo = async () => {
         try {
-        const response = await fetch(`http://localhost:8088/api/v1/stations/${id}`, {
+        const response = await fetch(`http://localhost:8080/api/v1/stations/${id}`, {
             method: 'GET',  
             });
             if(response.ok) {

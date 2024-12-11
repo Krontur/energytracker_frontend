@@ -25,7 +25,7 @@ const StationList = () => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/stations',
+            const response = await fetch('http://localhost:8080/api/v1/stations',
                 {
                 method: 'GET',
                 }

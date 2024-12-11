@@ -77,7 +77,7 @@ const MeteringPointForm = ({ onClose }) => {
 
     const handleCreateMeteringPoint = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/metering-points', {
+            const response = await fetch('http://localhost:8080/api/v1/metering-points', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ const MeteringPointForm = ({ onClose }) => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/stations');
+            const response = await fetch('http://localhost:8080/api/v1/stations');
             const data = await response.json();
             setStations(data);
             } catch (error) {
@@ -113,7 +113,7 @@ const MeteringPointForm = ({ onClose }) => {
 
     const handleFetchEnergyMeters = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/meters');
+            const response = await fetch('http://localhost:8080/api/v1/meters');
             const data = await response.json();
             setMeters(data);
             } catch (error) {
@@ -123,7 +123,7 @@ const MeteringPointForm = ({ onClose }) => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const response = await fetch('http://localhost:8088/api/v1/metering-points');
+            const response = await fetch('http://localhost:8080/api/v1/metering-points');
             const data = await response.json();
             setMeteringPoints(data);
             } catch (error) {
@@ -242,7 +242,7 @@ const MeteringPointForm = ({ onClose }) => {
                 />
 
                 <Autocomplete
-                    options={stations.filter((station) => station.deviceStatus === 'IN_STOCK').sort((a, b) => a.stationTag.localeCompare(b.stationTag))}
+                    options={stations.filter((station) => station.deviceStatus === 'INSTALLED').sort((a, b) => a.stationTag.localeCompare(b.stationTag))}
                     getOptionLabel={(option) => option.stationTag || ''}
                     value={selectedStation}
                     onChange={(event, newValue) => {

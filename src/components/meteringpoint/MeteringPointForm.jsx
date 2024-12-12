@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, TextField, Button, FormControl, Autocomplete, Switch, FormLabel, FormControlLabel } from '@mui/material';
 import PropTypes from 'prop-types';
 
-const MeteringPointForm = ({ onClose }) => {
+const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const [meteringPoint, setMeteringPoint] = useState({
 
@@ -14,13 +14,20 @@ const MeteringPointForm = ({ onClose }) => {
         activeStatus: true,
 
     });
+
+    useEffect(() => {
+        if (loadMeteringPoint != null){
+            setMeteringPoint(loadMeteringPoint);
+        }
+    }, [])
+
     const [selectedStation, setSelectedStation] = useState(null);
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [selectedMeteringPoint, setSelectedMeteringPoint] = useState(null);
     const [selectedMeter, setSelectedMeter] = useState(null);
     const [stations, setStations] = useState([]);
     const [channels, setChannels] = useState([]);
-    const [meteringpoints, setMeteringPoints] = useState([]);
+    const [meteringPoints, setMeteringPoints] = useState([]);
     const [meters, setMeters] = useState([]);
 
     const [locationNameError, setLocationNameError] = useState(false);
@@ -69,7 +76,8 @@ const MeteringPointForm = ({ onClose }) => {
         return isFormValid;
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault()
         if (validateForm()) {
             handleCreateMeteringPoint();
         }
@@ -77,8 +85,11 @@ const MeteringPointForm = ({ onClose }) => {
 
     const handleCreateMeteringPoint = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/metering-points', {
-                method: 'POST',
+            const url = meteringPoint.meteringPointId ? `http://localhost:8080/api/v1/metering-points/${meteringPoint.meteringPointId}` : `http://localhost:8080/api/v1/metering-points`;
+            const method = meteringPoint.meteringPointId ? 'PUT' : 'POST'; // Método HTTP
+
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     },
@@ -223,6 +234,7 @@ const MeteringPointForm = ({ onClose }) => {
                     options={meters.filter((meter) => meter.deviceStatus === 'IN_STOCK').sort((a, b) => a.serialNumber.localeCompare(b.serialNumber))}
                     getOptionLabel={(option) => option.serialNumber || ''}
                     value={selectedMeter}
+                    inputValue={loadMeteringPoint ? loadMeteringPoint.energyMeter.serialNumber : ''}
                     onChange={(event, newValue) => {
                         if (!newValue) {
                             setEnergyMeterError(true);
@@ -245,6 +257,13 @@ const MeteringPointForm = ({ onClose }) => {
                     options={stations.filter((station) => station.deviceStatus === 'INSTALLED').sort((a, b) => a.stationTag.localeCompare(b.stationTag))}
                     getOptionLabel={(option) => option.stationTag || ''}
                     value={selectedStation}
+                    inputValue={
+                        loadMeteringPoint
+                          ? stations.find(
+                              station => station.stationId === loadMeteringPoint.channel.stationId
+                            )?.stationTag || ''
+                          : ''
+                      }
                     onChange={(event, newValue) => {
                         if (newValue) {
                             setSelectedStation(newValue);
@@ -269,6 +288,7 @@ const MeteringPointForm = ({ onClose }) => {
                     options={channels.filter((channel) => channel.lonIsActive === false).sort((a, b) => a.channelNumber - b.channelNumber)}
                     getOptionLabel={(option) => option.channelNumber?.toString() || ''}
                     value={selectedChannel}
+                    inputValue={loadMeteringPoint ? loadMeteringPoint.channel.channelNumber : ''}
                     onChange={(event, newValue) => {
                         if (!newValue) {
                             setChannelError(true);
@@ -288,7 +308,7 @@ const MeteringPointForm = ({ onClose }) => {
                 />
 
                 <Autocomplete
-                    options={meteringpoints}
+                    options={meteringPoints}
                     getOptionLabel={(option) => option.meteringPointId?.toString() || ''}
                     value={selectedMeteringPoint}
                     onChange={(event, newValue) => {
@@ -314,6 +334,7 @@ const MeteringPointForm = ({ onClose }) => {
 
 MeteringPointForm.propTypes = {
     onClose: PropTypes.func.isRequired,
+    loadMeteringPoint: PropTypes.func.isRequired,
 }
 
 export default MeteringPointForm;

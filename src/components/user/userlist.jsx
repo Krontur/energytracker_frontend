@@ -22,7 +22,7 @@ const UserList = () => {
     const handleFetchUsers = async () => {
         console.log('fetching users');
         try {
-            const response = await fetch('http://localhost:8080/api/v1/users', {
+            const response = await fetch('http://localhost:8083/api/v1/users', {
                 method: 'GET',
             });
             if (response.ok) {
@@ -76,7 +76,6 @@ const UserList = () => {
                         width: '100%',
                         fontWeight: 'bold',
                         borderBottom: '2px solid #ccc', 
-                        backgroundColor: 'primary.light',
                     }}
                 >
                     <Box
@@ -162,7 +161,10 @@ const UserList = () => {
                                     <IconButton onClick={() => console.log(index)}>
                                         <Delete />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(index)}>
+                                    <IconButton onClick={() => {
+                                        setSelectedUser(user);
+                                        setCreateUserFormModal(true)
+                                    }}>
                                         <Edit />
                                     </IconButton>
                                     <IconButton onClick={() => {
@@ -198,7 +200,7 @@ const UserList = () => {
                     <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
                         <Close />
                     </IconButton>
-                    <UserForm onClose={handleClose}/>
+                    <UserForm onClose={handleClose} loadUser={selectedUser}/>
                 </Box>
             </Modal>
             <UserModal open={viewUserFormModal} user={selectedUser} onClose={handleClose}/>

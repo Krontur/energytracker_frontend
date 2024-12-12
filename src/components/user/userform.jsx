@@ -1,12 +1,12 @@
 import { Box, TextField, Button, FormControl, InputLabel, OutlinedInput, Switch,
          FormHelperText, IconButton, InputAdornment, Select, MenuItem, FormLabel, FormControlLabel } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
 
-const UserForm = ({ onClose }) => {
+const UserForm = ({ onClose, loadUser }) => {
 
     const navigate = useNavigate();
 
@@ -32,6 +32,11 @@ const UserForm = ({ onClose }) => {
         role: '',
         isActive: false
       });
+
+    useEffect(() => {
+        if (loadUser != null)
+            setUser(loadUser);
+    } , []);
 
     const validateForm = () => {
         let isValid = true;
@@ -90,8 +95,11 @@ const UserForm = ({ onClose }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await fetch('http://localhost:8080/api/v1/users', {
-                    method: 'POST',
+                const url = user.userAccountId ? `http://localhost:8083/api/v1/users/${user.userAccountId}` : `http://localhost:8083/api/v1/users`;
+                const method = user.userAccountId ? 'PUT' : 'POST'; // Método HTTP
+
+                const response = await fetch(url, {
+                    method,
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -315,6 +323,7 @@ const UserForm = ({ onClose }) => {
 }
 UserForm.propTypes = {
     onClose: PropTypes.func.isRequired,
+    loadUser: PropTypes.object.isRequired,
 };
 
 export default UserForm;

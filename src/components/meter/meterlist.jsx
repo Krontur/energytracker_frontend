@@ -60,7 +60,10 @@ const MeterList = () => {
                 alignItems: 'end'
             }}>
                 <Button
-                    onClick={() => setCreateMeterModal(true)}
+                    onClick={() => {
+                        setSelectedMeter(null)
+                        setCreateMeterModal(true)
+                    }}
                 >new</Button>                
             </ButtonGroup>
             <List
@@ -77,7 +80,6 @@ const MeterList = () => {
                         width: '100%',
                         fontWeight: 'bold',
                         borderBottom: '2px solid #ccc', 
-                        backgroundColor: 'primary.light',
                     }}
                 >
                     <Box
@@ -163,7 +165,11 @@ const MeterList = () => {
                                     <IconButton onClick={() => console.log(meter.energyMeterId)}>
                                         <Delete />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(meter.energyMeterId)}>
+                                    <IconButton onClick={() => {
+                                        setSelectedMeter(meter)
+                                        setCreateMeterModal(true)
+
+                                    }}>
                                         <Edit />
                                     </IconButton>
                                     <IconButton onClick={() =>
@@ -202,7 +208,7 @@ const MeterList = () => {
                     <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
                         <Close />
                     </IconButton>
-                    <MeterForm onClose={handleClose}/>
+                    <MeterForm onClose={handleClose} loadMeter={selectedMeter}/>
                 </Box>
             </Modal>
         </Box>

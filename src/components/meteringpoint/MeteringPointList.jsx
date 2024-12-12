@@ -72,7 +72,10 @@ const MeteringPointList = () => {
                 alignItems: 'end'
             }}>
                 <Button
-                    onClick={() => setCreateMeteringPointModal(true)}
+                    onClick={() => {
+                        setSelectedMeteringPoint(null)
+                        setCreateMeteringPointModal(true)
+                    }}
                 >new</Button>                
             </ButtonGroup>
             <List
@@ -89,7 +92,6 @@ const MeteringPointList = () => {
                         width: '100%',
                         fontWeight: 'bold',
                         borderBottom: '2px solid #ccc', 
-                        backgroundColor: 'primary.light',
                     }}
                 >
                     <Box
@@ -190,7 +192,10 @@ const MeteringPointList = () => {
                                     <IconButton onClick={() => console.log(meteringPoint.meteringPointId)}>
                                         <Delete />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(meteringPoint.meteringPointId)}>
+                                    <IconButton onClick={() => {
+                                        setSelectedMeteringPoint(meteringPoint);
+                                        setCreateMeteringPointModal(true);
+                                    }}>
                                         <Edit />
                                     </IconButton>
                                     <IconButton onClick={() =>
@@ -229,7 +234,7 @@ const MeteringPointList = () => {
                     <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
                         <Close />
                     </IconButton>
-                    <MeteringPointForm onClose={handleClose}/>
+                    <MeteringPointForm onClose={handleClose} loadMeteringPoint={selectedMeteringPoint}/>
                 </Box>
             </Modal>
         </Box>

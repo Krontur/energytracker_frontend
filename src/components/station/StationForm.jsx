@@ -1,9 +1,9 @@
 import { Box, TextField, Button, FormControl, InputLabel,
     FormHelperText, Select, MenuItem } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const MeterForm = ({ onClose }) => {
+const MeterForm = ({ onClose, loadStation }) => {
     const [station, setStation] = useState({
         stationId: '',
         serialNumber: '',
@@ -14,6 +14,12 @@ const MeterForm = ({ onClose }) => {
         stationTag: '',
         readingIntervalInSeconds: 900,
     });
+
+    useEffect(() => {
+        if (loadStation != null){
+            setStation(loadStation);
+        }
+    } , []);
 
     const [serialNumberError, setSerialNumberError] = useState(false);
     const [serialNumberErrorMessage, setSerialNumberErrorMessage] = useState('');
@@ -31,8 +37,11 @@ const MeterForm = ({ onClose }) => {
         console.log(station);
         if (validateForm()) {
             try {
-                const response = await fetch('http://localhost:8080/api/v1/stations', {
-                    method: 'POST',
+                const url = station.stationId ? `http://localhost:8080/api/v1/stations/${station.stationId}` : `http://localhost:8080/api/v1/stations`;
+                const method = station.stationId ? 'PUT' : 'POST'; // Método HTTP
+
+                const response = await fetch(url, {
+                    method,
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -233,6 +242,7 @@ const MeterForm = ({ onClose }) => {
                             setReadingIntervalInSecondsError(false);
                         }
                     }}
+                    disabled
                     required={true}
                     error={readingIntervalInSecondsError || undefined}
                     helperText={readingIntervalInSecondsErrorMessage}
@@ -253,6 +263,7 @@ const MeterForm = ({ onClose }) => {
 }
 MeterForm.propTypes = {
     onClose: PropTypes.func.isRequired,
+    loadStation: PropTypes.func.isRequired,
 };
 
 export default MeterForm;

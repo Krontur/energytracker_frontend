@@ -1,9 +1,10 @@
 import { Box, TextField, Button, FormControl, InputLabel,
     FormHelperText, Select, MenuItem } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { ForkLeft } from '@mui/icons-material';
 
-const MeterForm = ({ onClose }) => {
+const MeterForm = ({ onClose, loadMeter }) => {
     const [meter, setMeter] = useState({
         energyMeterId: '',
         serialNumber: '',
@@ -18,6 +19,12 @@ const MeterForm = ({ onClose }) => {
         referenceVoltage: 0,
         midApprovalYear: 0,
     });
+
+    useEffect(() => {
+        if (loadMeter != null){
+            setMeter(loadMeter);
+        }
+    }, [])
 
     const [serialNumberError, setSerialNumberError] = useState(false);
     const [serialNumberErrorMessage, setSerialNumberErrorMessage] = useState('');
@@ -38,8 +45,11 @@ const MeterForm = ({ onClose }) => {
         if (validateForm()) {
             console.log('Form is valid');
             try {
-                const response = await fetch('http://localhost:8080/api/v1/meters', {
-                    method: 'POST',
+                const url = meter.energyMeterId ? `http://localhost:8080/api/v1/meters/${meter.energyMeterId}` : `http://localhost:8080/api/v1/meters`;
+                const method = meter.energyMeterId ? 'PUT' : 'POST'; // Método HTTP
+
+                const response = await fetch(url, {
+                    method,
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -149,6 +159,13 @@ const MeterForm = ({ onClose }) => {
                         }}
                         required={true}
                         error={energyMeterTypeError}
+                        sx={{
+                            '& .MuiSelect-select': {
+                                textAlign: 'left',
+                                display: 'flex',  
+                                alignItems: 'flex-start',
+                            },
+                        }}
                     >
                         <MenuItem value="DIGITAL">Digital</MenuItem>
                         <MenuItem value="ANALOG">Analog</MenuItem>
@@ -162,7 +179,11 @@ const MeterForm = ({ onClose }) => {
                     </FormHelperText>
                 </FormControl>
 
-                <FormControl variant="outlined">
+                <FormControl 
+                        sx={{
+                                textAlign: 'left'
+                        }}
+                    variant="outlined">
                     <InputLabel id="connection-type-label">Connection Type</InputLabel>
                     <Select
                         labelId="connection-type-label"
@@ -174,11 +195,18 @@ const MeterForm = ({ onClose }) => {
                         }}
                         required={true}
                         error={connectionTypeError}
+                        sx={{
+                            '& .MuiSelect-select': {
+                                textAlign: 'left',
+                                display: 'flex',  
+                                alignItems: 'flex-start',
+                            },
+                        }}
                     >
-                        <MenuItem value="LON">LON Bus</MenuItem>
-                        <MenuItem value="LORA">LoRa</MenuItem>
-                        <MenuItem value="ModBus">Modbus</MenuItem>
-                        <MenuItem value="Impulse">Impulse</MenuItem>
+                        <MenuItem value="LON">LON</MenuItem>
+                        <MenuItem disabled value="LORA">LoRa</MenuItem>
+                        <MenuItem disabled value="ModBus">Modbus</MenuItem>
+                        <MenuItem disabled value="Impulse">Impulse</MenuItem>
                     </Select>
                     <FormHelperText
                         sx={{
@@ -276,6 +304,7 @@ const MeterForm = ({ onClose }) => {
 }
 MeterForm.propTypes = {
     onClose: PropTypes.func.isRequired,
+    loadMeter: PropTypes.func.isRequired,
 };
 
 export default MeterForm;

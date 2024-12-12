@@ -61,7 +61,10 @@ const StationList = () => {
                 alignItems: 'end'
             }}>
                 <Button
-                    onClick={() => setCreateStationModal(true)}
+                    onClick={() => {
+                        setSelectedStation(null)
+                        setCreateStationModal(true)
+                    }}
                 >new</Button>                
             </ButtonGroup>
             <List
@@ -78,7 +81,6 @@ const StationList = () => {
                         width: '100%',
                         fontWeight: 'bold',
                         borderBottom: '2px solid #ccc', 
-                        backgroundColor: 'primary.light',
                     }}
                 >
                     <Box
@@ -164,13 +166,15 @@ const StationList = () => {
                                     <IconButton onClick={() => console.log(station.stationId)}>
                                         <Delete />
                                     </IconButton>
-                                    <IconButton onClick={() => console.log(station.stationId)}>
+                                    <IconButton onClick={() => {
+                                        setSelectedStation(station);
+                                        setCreateStationModal(true);
+                                    }}>
                                         <Edit />
                                     </IconButton>
                                     <IconButton onClick={() =>
                                         {
                                             setSelectedStation(station);
-                                            console.log(station);
                                             navigate(`/stations/${station.stationId}`);
                                         }
                                     }>
@@ -203,7 +207,7 @@ const StationList = () => {
                     <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
                         <Close />
                     </IconButton>
-                    <StationForm onClose={handleClose}/>
+                    <StationForm onClose={handleClose} loadStation={selectedStation}/>
                 </Box>
             </Modal>
         </Box>

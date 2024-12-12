@@ -3,21 +3,21 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const StationInfo = () => {
+const MeteringPointInfo = () => {
 
     const { id } = useParams();
 
-    const [stationInfo, setStationInfo] = useState({});
+    const [meteringPointInfo, setMeteringPointInfo] = useState({});
     const [channels, setChannels] = useState([]);
 
-    const handleFetchStationInfo = async () => {
+    const handleFetchMeteringPointInfo = async () => {
         try {
-        const response = await fetch(`http://localhost:8080/api/v1/stations/${id}`, {
+        const response = await fetch(`http://localhost:8080/api/v1/metering-points/${id}`, {
             method: 'GET',  
             });
             if(response.ok) {
             const data = await response.json();
-            setStationInfo(data);
+            setMeteringPointInfo(data);
             setChannels(data.channelList);
             } else {
             const errorData = await response.json();
@@ -29,8 +29,8 @@ const StationInfo = () => {
     }
 
     useEffect(() => {
-        console.log('StationInfo component mounted');
-        handleFetchStationInfo();
+        console.log('MeteringPointInfo component mounted');
+        handleFetchMeteringPointInfo();
     }, []);
 
     const handleGoBack = () => {
@@ -48,7 +48,7 @@ const StationInfo = () => {
             Back
             </Button>
             <Typography variant="h4" gutterBottom sx={{ pt: 8, textAlign: 'center' }}>
-            Station Information
+            MeteringPoint Information
             </Typography>
         </Box>
         
@@ -56,19 +56,19 @@ const StationInfo = () => {
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             <Box sx={{ flex: '1 1 300px' }}>
                 <Typography variant="h6" gutterBottom>Device Details</Typography>
-                <Typography>ID: {stationInfo.stationId}</Typography>
-                <Typography>Created: {new Date(stationInfo.createdAt).toLocaleString()}</Typography>
-                <Typography>Status: {stationInfo.deviceStatus}</Typography>
-                <Typography>Type: {stationInfo.deviceType}</Typography>
-                <Typography>Updated: {new Date(stationInfo.updatedAt).toLocaleString()}</Typography>
+                <Typography>ID: {meteringPointInfo.meteringPointId}</Typography>
+                <Typography>Created: {new Date(meteringPointInfo.createdAt).toLocaleString()}</Typography>
+                <Typography>Status: {meteringPointInfo.deviceStatus}</Typography>
+                <Typography>Type: {meteringPointInfo.deviceType}</Typography>
+                <Typography>Updated: {new Date(meteringPointInfo.updatedAt).toLocaleString()}</Typography>
             </Box>
             <Box sx={{ flex: '1 1 300px' }}>
                 <Typography variant="h6" gutterBottom>Technical Specifications</Typography>
-                <Typography>Serial Number: {stationInfo.serialNumber}</Typography>
-                <Typography>Station Type: {stationInfo.stationType}</Typography>
-                <Typography>Station Name: {stationInfo.stationName}</Typography>
-                <Typography>Station Tag: {stationInfo.stationTag}</Typography>
-                <Typography>Reading Interval (Seconds): {stationInfo.readingIntervalInSeconds}</Typography>
+                <Typography>Serial Number: {meteringPointInfo.serialNumber}</Typography>
+                <Typography>MeteringPoint Type: {meteringPointInfo.meteringPointType}</Typography>
+                <Typography>MeteringPoint Name: {meteringPointInfo.meteringPointName}</Typography>
+                <Typography>MeteringPoint Tag: {meteringPointInfo.meteringPointTag}</Typography>
+                <Typography>Reading Interval (Seconds): {meteringPointInfo.readingIntervalInSeconds}</Typography>
             </Box>
             </Box>
         </Paper>
@@ -114,7 +114,7 @@ const StationInfo = () => {
     );
     };
 
-    export default StationInfo;
+    export default MeteringPointInfo;
 
 
 

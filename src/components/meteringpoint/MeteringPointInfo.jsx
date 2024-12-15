@@ -1,4 +1,4 @@
-import { Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Box, Chip } from '@mui/material';
+import { Container, Paper, Typography, Button, Box } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -8,7 +8,8 @@ const MeteringPointInfo = () => {
     const { id } = useParams();
 
     const [meteringPointInfo, setMeteringPointInfo] = useState({});
-    const [channels, setChannels] = useState([]);
+    const [channel, setChannel] = useState(null);
+    const [energyMeter, setEnergyMeter] = useState(null);
 
     const handleFetchMeteringPointInfo = async () => {
         try {
@@ -17,8 +18,10 @@ const MeteringPointInfo = () => {
             });
             if(response.ok) {
             const data = await response.json();
+            console.log(data);
             setMeteringPointInfo(data);
-            setChannels(data.channelList);
+            setChannel(data.channel);
+            setEnergyMeter(data.energyMeter);
             } else {
             const errorData = await response.json();
             console.error('Error:', errorData);
@@ -30,6 +33,7 @@ const MeteringPointInfo = () => {
 
     useEffect(() => {
         console.log('MeteringPointInfo component mounted');
+        console.log(meteringPointInfo);
         handleFetchMeteringPointInfo();
     }, []);
 
@@ -57,59 +61,23 @@ const MeteringPointInfo = () => {
             <Box sx={{ flex: '1 1 300px' }}>
                 <Typography variant="h6" gutterBottom>Device Details</Typography>
                 <Typography>ID: {meteringPointInfo.meteringPointId}</Typography>
-                <Typography>Created: {new Date(meteringPointInfo.createdAt).toLocaleString()}</Typography>
-                <Typography>Status: {meteringPointInfo.deviceStatus}</Typography>
-                <Typography>Type: {meteringPointInfo.deviceType}</Typography>
-                <Typography>Updated: {new Date(meteringPointInfo.updatedAt).toLocaleString()}</Typography>
+                <Typography>Status: {meteringPointInfo.activeStatus}</Typography>
+                <Typography>Location name: {meteringPointInfo.locationName}</Typography>
+                <Typography>Connection description: {meteringPointInfo.connectionDescription}</Typography>
+                <Typography>Created: {new Date(meteringPointInfo.createdDate).toLocaleString()}</Typography>
+                <Typography>Updated: {new Date(meteringPointInfo.updatedDate).toLocaleString()}</Typography>
             </Box>
             <Box sx={{ flex: '1 1 300px' }}>
                 <Typography variant="h6" gutterBottom>Technical Specifications</Typography>
-                <Typography>Serial Number: {meteringPointInfo.serialNumber}</Typography>
-                <Typography>MeteringPoint Type: {meteringPointInfo.meteringPointType}</Typography>
-                <Typography>MeteringPoint Name: {meteringPointInfo.meteringPointName}</Typography>
-                <Typography>MeteringPoint Tag: {meteringPointInfo.meteringPointTag}</Typography>
-                <Typography>Reading Interval (Seconds): {meteringPointInfo.readingIntervalInSeconds}</Typography>
+                <Typography>Energymeter Serial Number: {energyMeter?.serialNumber}</Typography>
+                <Typography>Energy meter type: {energyMeter?.energyMeterType}</Typography>
+                <Typography>Energy meter status: {energyMeter?.deviceStatus}</Typography>
+                <Typography>Channel number: {channel?.channelNumber}</Typography>
+                <Typography>Channel name: {channel?.channelName}</Typography>
             </Box>
             </Box>
         </Paper>
 
-        <Typography variant="h5" gutterBottom>
-            Channel List
-        </Typography>
-        
-        <TableContainer component={Paper}>
-            <Table>
-            <TableHead>
-                <TableRow>
-                <TableCell>Number</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Mode</TableCell>
-                <TableCell>Energy unit</TableCell>
-                <TableCell>Power unit</TableCell>
-                <TableCell>Lon Subchannel</TableCell>
-                <TableCell>Lon is active?</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {channels.map((channel) => (
-                <TableRow key={channel.channelId}>
-                    <TableCell>{channel.channelNumber}</TableCell>
-                    <TableCell>{channel.channelName}</TableCell>
-                    <TableCell>{channel.channelMode}</TableCell>
-                    <TableCell>{channel.energyUnit}</TableCell>
-                    <TableCell>{channel.powerUnit}</TableCell>
-                    <TableCell>{channel.lonSubChannel}</TableCell>
-                    <TableCell>
-                        <Chip 
-                            label={channel.lonIsActiv ? "Activo" : "Inactivo"} 
-                            color={channel.lonIsActiv ? "success" : "error"} 
-                            size="small" 
-                        /></TableCell>
-                </TableRow>
-                ))}
-            </TableBody>
-            </Table>
-        </TableContainer>
         </Container>
     );
     };

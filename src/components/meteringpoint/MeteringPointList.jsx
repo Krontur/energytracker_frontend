@@ -201,7 +201,6 @@ const MeteringPointList = () => {
                                     <IconButton onClick={() =>
                                         {
                                             setSelectedMeteringPoint(meteringPoint);
-                                            console.log(meteringPoint);
                                             navigate(`/metering-points/${meteringPoint.meteringPointId}`);
                                         }
                                     }>

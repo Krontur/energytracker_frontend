@@ -96,7 +96,7 @@ const UserForm = ({ onClose, loadUser }) => {
         if (validateForm()) {
             try {
                 const url = user.userAccountId ? `http://localhost:8083/api/v1/users/${user.userAccountId}` : `http://localhost:8083/api/v1/users`;
-                const method = user.userAccountId ? 'PUT' : 'POST'; // Método HTTP
+                const method = user.userAccountId ? 'PATCH' : 'POST';
 
                 const response = await fetch(url, {
                     method,
@@ -323,7 +323,7 @@ const UserForm = ({ onClose, loadUser }) => {
 }
 UserForm.propTypes = {
     onClose: PropTypes.func.isRequired,
-    loadUser: PropTypes.object.isRequired,
+    loadUser: PropTypes.object,
 };
 
 export default UserForm;

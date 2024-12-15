@@ -16,8 +16,15 @@ const MeterForm = ({ onClose, loadStation }) => {
     });
 
     useEffect(() => {
-        if (loadStation != null){
-            setStation(loadStation);
+        if (loadStation != null) {
+            // Filtrar solo las claves que existen en el estado inicial
+            const filteredStation = Object.keys(station).reduce((acc, key) => {
+                if (Object.prototype.hasOwnProperty.call(loadStation, key)) {
+                    acc[key] = loadStation[key];
+                }
+                return acc;
+            }, {});
+            setStation((prevState) => ({ ...prevState, ...filteredStation }));
         }
     } , []);
 
@@ -38,7 +45,7 @@ const MeterForm = ({ onClose, loadStation }) => {
         if (validateForm()) {
             try {
                 const url = station.stationId ? `http://localhost:8080/api/v1/stations/${station.stationId}` : `http://localhost:8080/api/v1/stations`;
-                const method = station.stationId ? 'PUT' : 'POST'; // Método HTTP
+                const method = station.stationId ? 'PATCH' : 'POST'; // Método HTTP
 
                 const response = await fetch(url, {
                     method,
@@ -98,7 +105,7 @@ const MeterForm = ({ onClose, loadStation }) => {
                 textAlign: 'center',
             }}
         >
-            <h2>Create New Station</h2>
+            <h2>{station.stationId ? "Edit Station" : "Create New Station"}</h2>
             <Box
                 component="form"
                 sx={{
@@ -263,7 +270,7 @@ const MeterForm = ({ onClose, loadStation }) => {
 }
 MeterForm.propTypes = {
     onClose: PropTypes.func.isRequired,
-    loadStation: PropTypes.func.isRequired,
+    loadStation: PropTypes.object,
 };
 
 export default MeterForm;

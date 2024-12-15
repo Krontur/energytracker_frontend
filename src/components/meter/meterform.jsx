@@ -2,7 +2,6 @@ import { Box, TextField, Button, FormControl, InputLabel,
     FormHelperText, Select, MenuItem } from '@mui/material';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ForkLeft } from '@mui/icons-material';
 
 const MeterForm = ({ onClose, loadMeter }) => {
     const [meter, setMeter] = useState({
@@ -22,7 +21,20 @@ const MeterForm = ({ onClose, loadMeter }) => {
 
     useEffect(() => {
         if (loadMeter != null){
-            setMeter(loadMeter);
+            setMeter({...loadMeter, 
+                energyMeterId: loadMeter.energyMeterId.toString(),
+                serialNumber: loadMeter.serialNumber,
+                deviceType: loadMeter.deviceType,
+                deviceStatus: loadMeter.deviceStatus,
+                createdAt: loadMeter.createdAt,
+                updatedAt: loadMeter.updatedAt,
+                connectionAddress: loadMeter.connectionAddress,
+                connectionType: loadMeter.connectionType,
+                energyMeterType: loadMeter.energyMeterType,
+                maxCurrent: loadMeter.maxCurrent,
+                referenceVoltage: loadMeter.referenceVoltage,
+                midApprovalYear: loadMeter.midApprovalYear
+            });
         }
     }, [])
 
@@ -39,15 +51,12 @@ const MeterForm = ({ onClose, loadMeter }) => {
     const [connectionAddressError, setConnectionAddressError] = useState(false);
     const [connectionAddressErrorMessage, setConnectionAddressErrorMessage] = useState('');
 
-    async function handleSubmit (event) {
-        event.preventDefault();
+    const handleSubmit = async () => {
         console.log(meter);
         if (validateForm()) {
-            console.log('Form is valid');
             try {
                 const url = meter.energyMeterId ? `http://localhost:8080/api/v1/meters/${meter.energyMeterId}` : `http://localhost:8080/api/v1/meters`;
-                const method = meter.energyMeterId ? 'PUT' : 'POST'; // Método HTTP
-
+                const method = meter.energyMeterId ? 'PATCH' : 'POST';
                 const response = await fetch(url, {
                     method,
                     headers: {
@@ -66,27 +75,13 @@ const MeterForm = ({ onClose, loadMeter }) => {
                 console.error('Error:', error);
             }
         }
-        console.log('Form is invalid');
     };
 
     const validateFieldEmpty = (field) => {
-        return !field;
+        return !field || field.trim() === '';
     };
 
     const validateForm = () => {
-
-        console.log('Validating form');
-        console.log('Serial number error: ' + serialNumberError);
-        console.log('Serial number error message: ' + serialNumberErrorMessage);
-        console.log('Connection type error: ' + connectionTypeError);
-        console.log('Energy meter type error: ' + energyMeterTypeError);
-        console.log('Max current error: ' + maxCurrentError);
-        console.log('Reference voltage error: ' + referenceVoltageError);
-        console.log('MID approval year error: ' + midApprovalYearError);
-        console.log('Connection address error: ' + connectionAddressError);
-        console.log(serialNumberError || connectionTypeError || energyMeterTypeError || maxCurrentError ||
-            referenceVoltageError || midApprovalYearError || connectionAddressError);
-
         return !(serialNumberError || connectionTypeError || energyMeterTypeError || maxCurrentError ||
         referenceVoltageError || midApprovalYearError || connectionAddressError);
     };
@@ -107,12 +102,12 @@ const MeterForm = ({ onClose, loadMeter }) => {
                 textAlign: 'center',
             }}
         >
-            <h2>Create New Energy Meter</h2>
+            <h2>{ loadMeter?.energyMeterId != null ? 'Edit Energy Meter' : 'Create New Energy Meter'}</h2>
             <Box
                 component="form"
                 sx={{
                     display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr', md: '1fr 1fr' }, // 1 columna en pantallas pequeñas, 2 columnas en medianas y grandes
+                    gridTemplateColumns: { xs: '1fr', sm: '1fr', md: '1fr 1fr' }, 
                     gap: '1rem',
                     width: '100%',
                     maxWidth: '640px',
@@ -186,6 +181,7 @@ const MeterForm = ({ onClose, loadMeter }) => {
                     variant="outlined">
                     <InputLabel id="connection-type-label">Connection Type</InputLabel>
                     <Select
+                        disabled={meter.energyMeterType == 'ANALOG'}
                         labelId="connection-type-label"
                         id="connection-type"
                         value={meter.connectionType}
@@ -304,7 +300,7 @@ const MeterForm = ({ onClose, loadMeter }) => {
 }
 MeterForm.propTypes = {
     onClose: PropTypes.func.isRequired,
-    loadMeter: PropTypes.func.isRequired,
+    loadMeter: PropTypes.object,
 };
 
 export default MeterForm;

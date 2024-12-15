@@ -8,6 +8,7 @@ import Stations from './components/station/Stations.jsx';
 import EnergyMeterInfo from './components/meter/MeterInfo.jsx';
 import StationInfo from './components/station/StationInfo.jsx';
 import MeteringPoints from './components/meteringpoint/MeteringPoints.jsx';
+import MeteringPointInfo from './components/meteringpoint/MeteringPointInfo.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
 
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
           {
             path: '/metering-points',
             element: <MeteringPoints />,
+          },
+          {
+            path: '/metering-points/:id',
+            element: <MeteringPointInfo />,
           }
         ],
       },

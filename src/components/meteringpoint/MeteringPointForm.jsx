@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const [meteringPoint, setMeteringPoint] = useState({
-
+        meteringPointId: null,
         locationName: '',
         connectionDescription: '',
         parentMeteringPointId: null,
@@ -15,16 +15,12 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     });
 
-    useEffect(() => {
-        if (loadMeteringPoint != null){
-            setMeteringPoint(loadMeteringPoint);
-        }
-    }, [])
-
     const [selectedStation, setSelectedStation] = useState(null);
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [selectedMeteringPoint, setSelectedMeteringPoint] = useState(null);
     const [selectedMeter, setSelectedMeter] = useState(null);
+    const [selectedParentMeteringPoint, setSelectedParentMeteringPoint] = useState(null);
+    const [parentMeteringPoint, setParentMeteringPoint] = useState(null);
     const [stations, setStations] = useState([]);
     const [channels, setChannels] = useState([]);
     const [meteringPoints, setMeteringPoints] = useState([]);
@@ -38,11 +34,38 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
     const [stationError, setStationError] = useState(false);
     const [channelError, setChannelError] = useState(false);
 
+    
     useEffect(() => {
         handleFetchStations();
         handleFetchEnergyMeters();
         handleFetchMeteringPoints();
     }, []);
+
+    useEffect(() => {
+        if (loadMeteringPoint && meters && stations && channels && meteringPoints) {
+            const loadedMeter = loadMeteringPoint.energyMeter;
+            const loadedChannel = loadMeteringPoint.channel;
+            const loadedStation = stations.find((station) => station.stationId === loadedChannel?.stationId);
+            const loadedParentMeteringPoint = meteringPoints.find((mp) => mp.meteringPointId === loadMeteringPoint.parentMeteringPointId);
+    
+            setSelectedMeter(loadedMeter || null);
+            setSelectedChannel(loadedChannel || null);
+            setSelectedStation(loadedStation || null);
+            setSelectedParentMeteringPoint(loadedParentMeteringPoint || null);
+            setSelectedMeteringPoint(loadedParentMeteringPoint || null);
+            setMeteringPoint({
+                meteringPointId: loadMeteringPoint.meteringPointId || null,
+                locationName: loadMeteringPoint.locationName || '',
+                connectionDescription: loadMeteringPoint.connectionDescription || '',
+                parentMeteringPointId: loadMeteringPoint.parentMeteringPointId || null,
+                energyMeterId: loadMeteringPoint.energyMeter?.energyMeterId || '',
+                channelId: loadMeteringPoint.channel?.channelId || '',
+                activeStatus: loadMeteringPoint.activeStatus || true,
+            });
+    
+            console.log(meteringPoint);
+        }
+    }, [loadMeteringPoint, meters, stations, channels, meteringPoints]);
 
     const validateFieldEmpty = (field) => {
         return field === '';
@@ -80,13 +103,14 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
         e.preventDefault()
         if (validateForm()) {
             handleCreateMeteringPoint();
+            console.log(meteringPoint);
         }
     }
 
     const handleCreateMeteringPoint = async () => {
         try {
             const url = meteringPoint.meteringPointId ? `http://localhost:8080/api/v1/metering-points/${meteringPoint.meteringPointId}` : `http://localhost:8080/api/v1/metering-points`;
-            const method = meteringPoint.meteringPointId ? 'PUT' : 'POST'; // Método HTTP
+            const method = meteringPoint.meteringPointId ? 'PATCH' : 'POST'; 
 
             const response = await fetch(url, {
                 method,
@@ -158,7 +182,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
                 textAlign: 'center',
             }}
         >
-            <h2>Create Metering Point</h2>
+            <h2>{ meteringPoint.meteringPointId == null ? "Create Metering Point" : "Edit Metering Point"}</h2>
             <Box
                 component="form"
                 sx={{
@@ -234,14 +258,14 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
                     options={meters.filter((meter) => meter.deviceStatus === 'IN_STOCK').sort((a, b) => a.serialNumber.localeCompare(b.serialNumber))}
                     getOptionLabel={(option) => option.serialNumber || ''}
                     value={selectedMeter}
-                    inputValue={loadMeteringPoint ? loadMeteringPoint.energyMeter.serialNumber : ''}
+                    inputValue={selectedMeter?.serialNumber || ''}
                     onChange={(event, newValue) => {
                         if (!newValue) {
-                            setEnergyMeterError(true);
-                        } else {
                             setMeteringPoint({ ...meteringPoint, energyMeterId: newValue.energyMeterId });
                             setSelectedMeter(newValue);
                             setEnergyMeterError(false);
+                        } else {
+                            setEnergyMeterError(true);
                         }
                     }}
                     renderInput={(params) => 
@@ -257,13 +281,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
                     options={stations.filter((station) => station.deviceStatus === 'INSTALLED').sort((a, b) => a.stationTag.localeCompare(b.stationTag))}
                     getOptionLabel={(option) => option.stationTag || ''}
                     value={selectedStation}
-                    inputValue={
-                        loadMeteringPoint
-                          ? stations.find(
-                              station => station.stationId === loadMeteringPoint.channel.stationId
-                            )?.stationTag || ''
-                          : ''
-                      }
+                    inputValue={selectedStation?.stationTag || ''}
                     onChange={(event, newValue) => {
                         if (newValue) {
                             setSelectedStation(newValue);
@@ -288,7 +306,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
                     options={channels.filter((channel) => channel.lonIsActive === false).sort((a, b) => a.channelNumber - b.channelNumber)}
                     getOptionLabel={(option) => option.channelNumber?.toString() || ''}
                     value={selectedChannel}
-                    inputValue={loadMeteringPoint ? loadMeteringPoint.channel.channelNumber : ''}
+                    inputValue={selectedChannel?.channelNumber?.toString() || ''}
                     onChange={(event, newValue) => {
                         if (!newValue) {
                             setChannelError(true);
@@ -312,8 +330,8 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
                     getOptionLabel={(option) => option.meteringPointId?.toString() || ''}
                     value={selectedMeteringPoint}
                     onChange={(event, newValue) => {
-                        setMeteringPoint({ ...meteringPoint, parentMeteringPointId: newValue.meteringPointId });
-                        setSelectedMeteringPoint(newValue);
+                        setParentMeteringPoint({ ...meteringPoint, parentMeteringPointId: newValue.meteringPointId });
+                        setSelectedParentMeteringPoint(newValue);
                     }}
                     renderInput={(params) => <TextField {...params} label="Select Parent Metering Point" variant="outlined" />}
                 />
@@ -334,7 +352,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
 MeteringPointForm.propTypes = {
     onClose: PropTypes.func.isRequired,
-    loadMeteringPoint: PropTypes.func.isRequired,
+    loadMeteringPoint: PropTypes.object,
 }
 
 export default MeteringPointForm;

@@ -1,5 +1,8 @@
-import { Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Box, Chip } from '@mui/material';
+import { Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Box, Chip, IconButton, Modal } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Edit from '@mui/icons-material/Edit';
+import Close from '@mui/icons-material/Close';
+import ChannelForm from '../Channel/ChannelForm'
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -9,6 +12,9 @@ const StationInfo = () => {
 
     const [stationInfo, setStationInfo] = useState({});
     const [channels, setChannels] = useState([]);
+    const [selectedChannel, setSelectedChannel] = useState(null);
+    const [createChannelModal, setCreateChannelModal] = useState(false);
+
 
     const handleFetchStationInfo = async () => {
         try {
@@ -26,7 +32,7 @@ const StationInfo = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    }
+    };
 
     useEffect(() => {
         console.log('StationInfo component mounted');
@@ -35,6 +41,12 @@ const StationInfo = () => {
 
     const handleGoBack = () => {
         window.history.back();
+    };
+
+    
+    const handleClose = () => {
+        setCreateChannelModal(false);
+        handleFetchStationInfo();
     };
 
     return (
@@ -91,7 +103,7 @@ const StationInfo = () => {
                 </TableRow>
             </TableHead>
             <TableBody>
-                {channels.map((channel) => (
+                {channels.toSorted((a, b) => a.channelId - b.channelId).map((channel) => (
                 <TableRow key={channel.channelId}>
                     <TableCell>{channel.channelNumber}</TableCell>
                     <TableCell>{channel.channelName}</TableCell>
@@ -101,15 +113,47 @@ const StationInfo = () => {
                     <TableCell>{channel.lonSubChannel}</TableCell>
                     <TableCell>
                         <Chip 
-                            label={channel.lonIsActiv ? "Activo" : "Inactivo"} 
-                            color={channel.lonIsActiv ? "success" : "error"} 
+                            label={channel.lonIsActive ? "Activo" : "Inactivo"} 
+                            color={channel.lonIsActive ? "success" : "error"} 
                             size="small" 
                         /></TableCell>
+                    <TableCell>
+                        <IconButton onClick={() => {
+                            setSelectedChannel(channel);
+                            setCreateChannelModal(true);
+                        }}>
+                            <Edit />
+                        </IconButton>
+                    </TableCell>
                 </TableRow>
                 ))}
             </TableBody>
             </Table>
         </TableContainer>
+        <Modal open={createChannelModal} >
+                <Box
+                sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: { xs:'90%', md: '60%'},
+                    bgcolor: 'background.paper',
+                    borderRadius: 1,
+                    boxShadow: 24,
+                    p: 4,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+                >
+                    <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
+                        <Close />
+                    </IconButton>
+                    <ChannelForm onClose={handleClose} loadChannel={selectedChannel}/>
+                </Box>
+            </Modal>
         </Container>
     );
     };

@@ -4,6 +4,7 @@ import background from '../assets/backgroundET.png';
 
 
 function Home() {
+
   return (
       <Box
         component="main"

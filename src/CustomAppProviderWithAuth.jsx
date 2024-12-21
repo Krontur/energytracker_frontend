@@ -1,11 +1,13 @@
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
-import { Dashboard, Group, ElectricMeter, HomeMax, Bolt } from '@mui/icons-material';
+import { Dashboard, Group, ElectricMeter, HomeMax, Bolt, BarChart } from '@mui/icons-material';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-const NAVIGATION = [
+const NAVIGATION = {
+  public: [
   {
     kind: 'header',
     title: 'Main items',
@@ -14,7 +16,8 @@ const NAVIGATION = [
     title: 'Home',
     icon: <Dashboard />,
     path: '/',
-  },
+  }],
+  private: [
   {
     segment: 'users',
     title: 'Users',
@@ -38,8 +41,14 @@ const NAVIGATION = [
     title: 'Metering Points',
     icon: <Bolt />,
     path: '/metering-points',
+  },
+  {
+    segment: 'consumptions',
+    title: 'Consumptions',
+    icon: <BarChart />,
+    path: '/consumptions',
   }
-];
+]};
 
 const BRANDING = {
     title: 'Energy Tracker',
@@ -66,8 +75,6 @@ const theme = createTheme({
   },
 });
 
-
-
 function useRouter(initialPath) {
 
   const [pathname, setPathname] = useState(initialPath);
@@ -93,11 +100,18 @@ function useRouter(initialPath) {
 
 function CustomAppProvider() {
   const location = useLocation();
-  const router = useRouter(location.pathname);
+  const router = useRouter(location.pathname);  
+  const { isAuthenticated } = useAuth();
+
+  const navigation = useMemo(() => {
+    return isAuthenticated
+      ? [...NAVIGATION.public, ...NAVIGATION.private]
+      : NAVIGATION.public;
+  }, [isAuthenticated]);
 
   return (
     <AppProvider
-      navigation={NAVIGATION}
+      navigation={navigation}
       branding={BRANDING}
       router={router}
       theme={theme}
@@ -107,4 +121,12 @@ function CustomAppProvider() {
   );
 }
 
-export default CustomAppProvider;
+function CustomAppProviderWithAuth() {
+  return (
+    <AuthProvider>
+      <CustomAppProvider />
+    </AuthProvider>
+  );
+}
+
+export default CustomAppProviderWithAuth;

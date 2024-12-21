@@ -1,6 +1,5 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import CustomAppProvider from './CustomAppProvider.jsx';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Users from './components/user/Users.jsx';
 import Meters from './components/meter/Meters.jsx';
@@ -9,16 +8,18 @@ import EnergyMeterInfo from './components/meter/MeterInfo.jsx';
 import StationInfo from './components/station/StationInfo.jsx';
 import MeteringPoints from './components/meteringpoint/MeteringPoints.jsx';
 import MeteringPointInfo from './components/meteringpoint/MeteringPointInfo.jsx';
+import Consumptions from './components/consumption/Consumptions.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
+import CustomAppProviderWithAuth from './CustomAppProviderWithAuth.jsx';
 
 const router = createBrowserRouter([
   {
-    Component: CustomAppProvider,
+    element: <CustomAppProviderWithAuth/>,
     children: [
       {
         path: '/',
-        Component: App,
+        element: <App/>,
         children: [
           {
             path: '',
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
           {
             path: '/metering-points/:id',
             element: <MeteringPointInfo />,
+          },
+          {
+            path: '/consumptions',
+            element: <Consumptions />,
           }
         ],
       },

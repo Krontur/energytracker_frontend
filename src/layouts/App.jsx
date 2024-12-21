@@ -32,7 +32,7 @@ const App = () => {
     );
 };
 
-App.PropTypes = {
+App.propTypes = {
     CustomToolbarActions: PropTypes.node.isRequired,
 };
 

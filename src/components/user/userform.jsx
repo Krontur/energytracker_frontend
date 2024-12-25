@@ -34,8 +34,19 @@ const UserForm = ({ onClose, loadUser }) => {
       });
 
     useEffect(() => {
-        if (loadUser != null)
+        if (loadUser != null){
             setUser(loadUser);
+        } else {
+            setUser({
+                userAccountId: '',
+                fullName: '',
+                email: '',
+                password: '',
+                role: '',
+                isActive: false
+            });
+        }
+        
     } , []);
 
     const validateForm = () => {
@@ -213,9 +224,9 @@ const UserForm = ({ onClose, loadUser }) => {
                     helperText={emailErrorMessage}
                 />
                 <FormControl variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                    <InputLabel htmlFor="outlined-adornment-password-1">Password</InputLabel>
                     <OutlinedInput
-                        id="outlined-adornment-password"
+                        id="outlined-adornment-password-1"
                         type={showPassword ? 'text' : 'password'}
                         onChange={(e) => {
                             setPassword(e.target.value);
@@ -244,9 +255,9 @@ const UserForm = ({ onClose, loadUser }) => {
                 </FormControl>
 
                 <FormControl variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password">Repeat Password</InputLabel>
+                    <InputLabel htmlFor="outlined-adornment-password-2">Repeat Password</InputLabel>
                     <OutlinedInput
-                        id="outlined-adornment-password"
+                        id="outlined-adornment-password-2"
                         type={showPasswordRepeat ? 'text' : 'password'}
                         onChange={(e) => {
                             setPasswordRepeat(e.target.value); }
@@ -278,7 +289,7 @@ const UserForm = ({ onClose, loadUser }) => {
                     <Select
                         labelId="role-select-outlined-label"
                         id="role-select-outlined"
-                        value={user.role}
+                        value={user.role || ''}
                         label="Role"
                         onChange={(e) => setUser({ ...user, role: e.target.value })}
                         required={true}
@@ -301,7 +312,7 @@ const UserForm = ({ onClose, loadUser }) => {
                         control={
                             <Switch
                                 type="checkbox"
-                                checked={user.isActive}
+                                checked={user.isActive || false}
                                 onChange={(e) => setUser({ ...user, isActive: e.target.checked })}
                                 required={true}
                             />

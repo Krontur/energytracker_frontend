@@ -4,7 +4,7 @@ import { Dashboard, Group, ElectricMeter, HomeMax, Bolt, BarChart } from '@mui/i
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 
 const NAVIGATION = {
   public: [

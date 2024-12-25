@@ -17,6 +17,7 @@ const UserList = () => {
     const handleClose = () => {
         setCreateUserFormModal(false);
         setViewUserFormModal(false);
+        handleFetchUsers();
     };
 
     const handleFetchUsers = async () => {
@@ -59,7 +60,10 @@ const UserList = () => {
                 alignItems: 'end'
             }}>
                 <Button
-                    onClick={() => setCreateUserFormModal(true)}
+                    onClick={() => {
+                        setCreateUserFormModal(true);
+                        setSelectedUser({});
+                    }}
                 >new</Button>                
             </ButtonGroup>
             <List

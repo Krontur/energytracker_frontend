@@ -257,14 +257,16 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
                 <Autocomplete
                     options={meters.filter((meter) => meter.deviceStatus === 'IN_STOCK').sort((a, b) => a.serialNumber.localeCompare(b.serialNumber))}
                     getOptionLabel={(option) => option.serialNumber || ''}
-                    value={selectedMeter}
+                    value={selectedMeter || ''}
                     inputValue={selectedMeter?.serialNumber || ''}
                     onChange={(event, newValue) => {
-                        if (!newValue) {
-                            setMeteringPoint({ ...meteringPoint, energyMeterId: newValue.energyMeterId });
+                        if (newValue) {
                             setSelectedMeter(newValue);
+                            setMeteringPoint({ ...meteringPoint, energyMeterId: newValue.energyMeterId });
                             setEnergyMeterError(false);
                         } else {
+                            setSelectedMeter(null);
+                            setMeteringPoint({ ...meteringPoint, energyMeterId: '' });
                             setEnergyMeterError(true);
                         }
                     }}

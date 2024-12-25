@@ -1,7 +1,6 @@
 import { Box } from "@mui/material"
 import ConsumptionCard from "./ConsumptionCard"
 import { useState, useEffect } from "react"
-import ConsumptionChart from "./ConsumptionChart";
 
 
 const ConsumptionDashboard = () => {
@@ -115,26 +114,6 @@ const ConsumptionDashboard = () => {
       }, [meteringPoints]);
       
       return (
-        <>
-      {/* Contenedor del Chart */}
-      <Box
-        sx={{
-          width: "100%", // Ocupar todo el ancho disponible
-          bgcolor: "background.paper",
-          padding: 2,
-          boxShadow: 1,
-          marginBottom: 3,
-        }}
-      >
-        <ConsumptionChart
-          data={consumptions.map((item) => ({
-            consumptionTimestamp: item.consumptionTimestamp,
-            consumptionValue: item.consumptionValue,
-          }))}
-        />
-      </Box>
-
-      {/* Contenedor principal para las tarjetas */}
       <Box
         component="main"
         sx={{
@@ -170,7 +149,6 @@ const ConsumptionDashboard = () => {
           })
         )}
       </Box>
-    </>
       );      
 }
 

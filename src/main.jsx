@@ -11,7 +11,7 @@ import MeteringPointInfo from './components/meteringpoint/MeteringPointInfo.jsx'
 import Consumptions from './components/consumption/Consumptions.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
-import CustomAppProviderWithAuth from './CustomAppProviderWithAuth.jsx';
+import CustomAppProviderWithAuth from './pages/CustomAppProviderWithAuth.jsx';
 
 const router = createBrowserRouter([
   {

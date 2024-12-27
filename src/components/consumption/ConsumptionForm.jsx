@@ -4,11 +4,17 @@ import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-picker
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const localZone = dayjs.tz.guess();
 
 const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
   const [formData, setFormData] = useState({
     meteringPointId: '',
-    intervalType: 'INTERVAL', 
+    intervalType: 'INTERVAL',
     startDate: null,
     startTime: null,
     endDate: null,
@@ -34,25 +40,44 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
         console.log(errorData);
       }
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-};
+  };
 
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => { 
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     const startDateTime = dayjs(formData.startDate)
+      .tz(localZone)
       .hour(formData.startTime ? formData.startTime.hour() : 0)
       .minute(formData.startTime ? formData.startTime.minute() : 0)
       .second(0)
       .format('YYYY-MM-DDTHH:mm:ss');
 
-    const endDateTime = dayjs(formData.endDate)
+    let endOf;
+
+    switch (formData.intervalType) {
+      case 'DAILY':
+        endOf = 'day';
+        break;
+      case 'MONTHLY':
+        endOf = 'month';
+        break;
+      case 'YEARLY':
+        endOf = 'year';
+        break;
+      default:
+        endOf = 'day';
+    }
+
+
+    const endDateTime = dayjs(formData.endDate.endOf(endOf))
+      .tz(localZone)
       .hour(formData.endTime ? formData.endTime.hour() : 23)
       .minute(formData.endTime ? formData.endTime.minute() : 59)
       .second(59)
@@ -64,6 +89,7 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
       startDateTime,
       endDateTime,
     };
+    console.log(JSON.stringify(payload));
 
     try {
       const res = await fetch('http://localhost:8082/api/v1/consumptions/metering-point/interval', {
@@ -78,7 +104,7 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
         throw new Error('Network response was not ok');
       }
 
-      if(res.status === 204 || res.status === 404) {
+      if (res.status === 204 || res.status === 404) {
         setConsumptions([]);
         setIntervalType(formData.intervalType);
         setError('No data found for the selected interval');
@@ -97,18 +123,18 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
 
   function getViews(intervalType) {
     switch (intervalType) {
-        case 'YEAR':
-            return ['year'];
-        case 'MONTH':
-            return ['month', 'year'];
-        default:
-            return ['day', 'month', 'year'];
+      case 'YEARLY':
+        return ['year'];
+      case 'MONTHLY':
+        return ['month', 'year'];
+      default:
+        return ['day', 'month', 'year'];
     }
-}
+  }
 
-    useEffect(() => {
-        handleFetchMeteringPoints();
-    }, []);
+  useEffect(() => {
+    handleFetchMeteringPoints();
+  }, []);
 
   useEffect(() => {
     setViews(getViews(formData.intervalType));
@@ -129,19 +155,19 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
             gap={3}
           >
             <FormControl fullWidth>
-                <InputLabel id="metering-point-select-label">Metering Point ID</InputLabel>
-                <Select
+              <InputLabel id="metering-point-select-label">Metering Point ID</InputLabel>
+              <Select
                 labelId="metering-point-select-label"
                 value={formData.meteringPointId}
                 onChange={(e) => handleInputChange('meteringPointId', e.target.value)}
                 required
-                >
+              >
                 {meteringPoints.map((meteringPoint) => (
-                    <MenuItem key={meteringPoint.meteringPointId} value={meteringPoint.meteringPointId}>
+                  <MenuItem key={meteringPoint.meteringPointId} value={meteringPoint.meteringPointId}>
                     {meteringPoint.meteringPointId}
-                    </MenuItem>
+                  </MenuItem>
                 ))}
-                </Select>
+              </Select>
             </FormControl>
             <TextField
               label="Interval Type"
@@ -153,9 +179,9 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
               required
             >
               <MenuItem value="INTERVAL">Custom Interval</MenuItem>
-              <MenuItem value="DAY">By Day</MenuItem>
-              <MenuItem value="MONTH">By Month</MenuItem>
-              <MenuItem value="YEAR">By Year</MenuItem>
+              <MenuItem value="DAILY">By Day</MenuItem>
+              <MenuItem value="MONTHLY">By Month</MenuItem>
+              <MenuItem value="YEARLY">By Year</MenuItem>
             </TextField>
             <DatePicker
               label="Start Date"

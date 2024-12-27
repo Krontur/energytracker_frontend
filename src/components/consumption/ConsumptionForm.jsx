@@ -24,6 +24,11 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
   const [views, setViews] = useState(['day', 'month', 'year']);
   const [meteringPoints, setMeteringPoints] = useState([]);
   const [error, setError] = useState(null);
+  const [errorDateTime, setErrorDateTime] = useState(false);
+  const [errorDateTimeMessage, setErrorDateTimeMessage] = useState('');
+
+  const MAX_SELECTABLE_DAY = dayjs().subtract(1, 'day');
+  const MIN_SELECTABLE_DAY = dayjs().subtract(3, 'year');
 
   const handleFetchMeteringPoints = async () => {
     console.log('Fetching metering points');
@@ -53,10 +58,10 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
     setError(null);
 
     const startDateTime = dayjs(formData.startDate)
-      .tz(localZone)
-      .hour(formData.startTime ? formData.startTime.hour() : 0)
-      .minute(formData.startTime ? formData.startTime.minute() : 0)
+      .hour(formData.intervalType === "INTERVAL" ? formData.startTime.hour() : 0)
+      .minute(formData.intervalType === "INTERVAL" ? formData.startTime.minute() : 0)
       .second(0)
+      .tz(localZone)
       .format('YYYY-MM-DDTHH:mm:ss');
 
     let endOf;
@@ -75,12 +80,11 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
         endOf = 'day';
     }
 
-
     const endDateTime = dayjs(formData.endDate.endOf(endOf))
+      .hour(formData.intervalType === "INTERVAL" ? formData.endTime.hour() : 23)
+      .minute(formData.intervalType === "INTERVAL" ? formData.endTime.minute() : 59)
+      .second(formData.intervalType === "INTERVAL" ? 0 : 59)
       .tz(localZone)
-      .hour(formData.endTime ? formData.endTime.hour() : 23)
-      .minute(formData.endTime ? formData.endTime.minute() : 59)
-      .second(59)
       .format('YYYY-MM-DDTHH:mm:ss');
 
     const payload = {
@@ -121,6 +125,27 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
     }
   };
 
+  
+
+  const validateDateTime = () => {
+    const startDate = dayjs(formData.startDate);
+    const endDate = dayjs(formData.endDate);
+    const startTime = dayjs(formData.startTime);
+    const endTime = dayjs(formData.endTime);
+  
+    if (startDate.isSame(endDate, 'day')) {
+      if (startTime.isAfter(endTime)) {
+        setErrorDateTime(true);
+        setErrorDateTimeMessage('Start time must be before end time');
+        return false;
+      }
+    }
+    setErrorDateTime(false);
+    setErrorDateTimeMessage('');
+    return true;
+  };
+
+
   function getViews(intervalType) {
     switch (intervalType) {
       case 'YEARLY':
@@ -138,8 +163,7 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
 
   useEffect(() => {
     setViews(getViews(formData.intervalType));
-    console.log(formData);
-
+    validateDateTime();
   }, [formData]);
 
   return (
@@ -187,33 +211,75 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
               label="Start Date"
               views={views}
               value={formData.startDate}
+              defaultValue={dayjs().subtract(1, 'day')}
               onChange={(newValue) => handleInputChange('startDate', newValue)}
               renderInput={(params) => <TextField {...params} fullWidth required />}
+              minDate={MIN_SELECTABLE_DAY}
+              maxDate={formData.endDate || MAX_SELECTABLE_DAY} 
             />
             {formData.intervalType === 'INTERVAL' && (
               <TimePicker
                 label="Start Time"
                 value={formData.startTime}
-                onChange={(newValue) => handleInputChange('startTime', newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth required />}
+                onError={errorDateTime}
+                slotProps={{
+                  textField: {
+                    helperText: errorDateTimeMessage,
+                  },
+                }}
+                onChange={(newValue) => {
+                  validateDateTime();
+                  handleInputChange('startTime', newValue);}}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      required
+                    />
+                  )}
+                ampm={false}
               />
             )}
             <DatePicker
               label="End Date"
               views={views}
               value={formData.endDate}
+              defaultValue={dayjs().subtract(1, 'day')}
               onChange={(newValue) => handleInputChange('endDate', newValue)}
               renderInput={(params) => <TextField {...params} fullWidth required />}
+              disableFuture
+              minDate={formData.startDate}
             />
             {formData.intervalType === 'INTERVAL' && (
               <TimePicker
                 label="End Time"
                 value={formData.endTime}
-                onChange={(newValue) => handleInputChange('endTime', newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth required />}
+                onError={errorDateTime}
+                slotProps={{
+                  textField: {
+                    helperText: errorDateTime ? errorDateTimeMessage : '',
+                  },
+                }}
+                onChange={(newValue) => {
+                  validateDateTime();               
+                  handleInputChange('endTime', newValue);}}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    required
+                  />
+                )}
+                ampm={false}
               />
             )}
-            <Button type="submit" variant="contained" color="primary" fullWidth>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary" 
+              fullWidth
+              disabled={errorDateTime}
+              >
               Submit
             </Button>
           </Box>

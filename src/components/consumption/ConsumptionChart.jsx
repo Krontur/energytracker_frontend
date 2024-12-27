@@ -77,7 +77,7 @@ const ConsumptionChart = ({ data, intervalType }) => {
   const toDateTime = dayjs(toTimestamp)
     .tz(localZone)
     .endOf(endOfChartTitle)
-    .minute(intervalType === "INTERVAL" ? 15 : 59)
+    .minute(intervalType === "INTERVAL" ? toTimestamp.getMinutes() : 59)
     .format('YYYY-MM-DDTHH:mm:ss');
 
   const chartTitle = data.length > 0
@@ -122,7 +122,7 @@ ConsumptionChart.propTypes = {
     PropTypes.shape({
       consumptionTimestamp: PropTypes.string,
       consumptionValue: PropTypes.number,
-      meteringPointId: PropTypes.string,
+      meteringPointId: PropTypes.number,
     })
   ).isRequired,
   intervalType: PropTypes.string,

@@ -2,7 +2,7 @@ import { Box, List, ListItem, ListItemIcon, ListItemText, IconButton, ButtonGrou
 import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MeterForm from './MeterForm';
+import MeterForm from './meterform';
 import Modal from '@mui/material/Modal';
 
 const MeterList = () => {

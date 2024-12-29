@@ -1,0 +1,18 @@
+services:
+  web:
+    networks:
+      - energytracker-network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    restart: always
+    volumes:
+      - .:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+networks:
+  energytracker-network:
+    driver: bridge

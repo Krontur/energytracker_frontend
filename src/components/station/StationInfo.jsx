@@ -2,7 +2,7 @@ import { Container, Paper, Typography, Table, TableBody, TableCell, TableContain
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Edit from '@mui/icons-material/Edit';
 import Close from '@mui/icons-material/Close';
-import ChannelForm from '../Channel/ChannelForm'
+import ChannelForm from '../channel/ChannelForm'
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import Users from './components/user/Users.jsx';
+import Users from './components/user/users.jsx';
 import Meters from './components/meter/Meters.jsx';
 import Stations from './components/station/Stations.jsx';
 import EnergyMeterInfo from './components/meter/MeterInfo.jsx';

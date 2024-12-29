@@ -1,8 +1,27 @@
-# React + Vite
+# EnergyTracker Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto es el frontend de la aplicación **EnergyTracker**, diseñado para monitorizar y gestionar datos energéticos en tiempo real. Está desarrollado con **React** utilizando **Vite**, proporcionando una configuración moderna, rápida y minimalista con soporte para Hot Module Replacement (HMR) y reglas de ESLint.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## **Características principales**
+- **Framework**: React
+- **Builder**: Vite
+- **HMR**: Soporte para actualización en caliente durante el desarrollo.
+- **Linting**: Reglas de ESLint configuradas para garantizar un código limpio y consistente.
+
+---
+
+## **Requisitos previos**
+Antes de empezar, asegúrate de tener instalado lo siguiente:
+- **Node.js** (versión 18 o superior).
+- **npm** o **pnpm** (recomendado).
+
+---
+
+## **Instalación**
+1. Clona el repositorio:
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd energytracker-frontend
+   build_and_run.bat

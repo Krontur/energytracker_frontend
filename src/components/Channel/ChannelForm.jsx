@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Box, TextField, Button, FormControl, InputLabel, Select, MenuItem, FormHelperText,
     FormControlLabel, Switch, FormLabel } from "@mui/material";
 import { useState, useEffect } from "react";
+import { useFetchWithAuth } from "../../hooks/useFetchWithAuth";
 
 
 const ChannelForm = ({ onClose, loadChannel }) => {
@@ -21,6 +22,8 @@ const ChannelForm = ({ onClose, loadChannel }) => {
         stationId: null,
         uratio: null,
     });
+
+    const { api } = useFetchWithAuth();
 
     const [channelNameError, setChannelNameError] = useState(false);
     const [channelNameErrorMessage, setChannelNameErrorMessage] = useState('');
@@ -101,13 +104,7 @@ const ChannelForm = ({ onClose, loadChannel }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await fetch('http://localhost:8080/api/v1/channels', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(channel),
-                });
+                const response = await api.post('http://localhost:8080/api/v1/channels', channel);
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);

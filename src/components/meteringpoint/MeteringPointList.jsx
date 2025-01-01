@@ -3,15 +3,18 @@ import { Box, Button, ButtonGroup, IconButton, List, ListItem, ListItemText, Mod
 import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import MeteringPointForm from './MeteringPointForm';
+import useRoleCheck from '../../hooks/useRoleCheck';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeteringPointList = () => {
-
+    const { isAdmin } = useRoleCheck();
     const [meteringPoints, setMeteringPoints] = useState([]);
     const [stations, setStations] = useState([]);
     const [selectedMeteringPoint, setSelectedMeteringPoint] = useState({});
     const [createMeteringPointModal, setCreateMeteringPointModal] = useState(false);
 
     const navigate = useNavigate();
+    const { api } = useFetchWithAuth();
     
     useEffect(() => {
         handleFetchMeteringPoints();
@@ -20,17 +23,11 @@ const MeteringPointList = () => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/metering-points',
-                {
-                method: 'GET',
-                }
-            );
-            if(response.ok) {
-                const data = await response.json();
+            const { data, status } = await api.get('http://localhost:8080/api/v1/metering-points');
+            if(status === 200) {
                 setMeteringPoints(data);
             } else {
-                const errorData = await response.json();
-                console.error('Error:', errorData);
+                console.error('Error:', data);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -39,9 +36,13 @@ const MeteringPointList = () => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/stations');
-            const data = await response.json();
-            setStations(data);
+            const { data, status } = await api.get('http://localhost:8080/api/v1/stations');
+            if (status === 200) {
+                console.log(data);
+                setStations(data);
+            } else {
+                console.error('Error:', data);
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -66,18 +67,20 @@ const MeteringPointList = () => {
                 alignItems: 'end'
             }}
         >
-            <ButtonGroup sx={{ 
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'end'
-            }}>
-                <Button
-                    onClick={() => {
-                        setSelectedMeteringPoint(null)
-                        setCreateMeteringPointModal(true)
-                    }}
-                >new</Button>                
-            </ButtonGroup>
+            { isAdmin() && (
+                <ButtonGroup sx={{ 
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'end'
+                }}>
+                    <Button
+                        onClick={() => {
+                            setSelectedMeteringPoint(null)
+                            setCreateMeteringPointModal(true)
+                        }}
+                    >new</Button>                
+                </ButtonGroup>
+            )}
             <List
                 sx={{ width: '100%', 
                       maxWidth: '1280px',
@@ -189,15 +192,19 @@ const MeteringPointList = () => {
                         >
                             <ListItemIcon>
                                 <ButtonGroup>
-                                    <IconButton onClick={() => console.log(meteringPoint.meteringPointId)}>
-                                        <Delete />
-                                    </IconButton>
-                                    <IconButton onClick={() => {
-                                        setSelectedMeteringPoint(meteringPoint);
-                                        setCreateMeteringPointModal(true);
-                                    }}>
-                                        <Edit />
-                                    </IconButton>
+                                    { isAdmin() && (
+                                        <>
+                                            <IconButton onClick={() => console.log(meteringPoint.meteringPointId)}>
+                                                <Delete />
+                                            </IconButton>
+                                            <IconButton onClick={() => {
+                                                setSelectedMeteringPoint(meteringPoint);
+                                                setCreateMeteringPointModal(true);
+                                            }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </>
+                                    )}
                                     <IconButton onClick={() =>
                                         {
                                             setSelectedMeteringPoint(meteringPoint);

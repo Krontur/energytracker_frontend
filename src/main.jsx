@@ -12,11 +12,22 @@ import Consumptions from './components/consumption/Consumptions.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
 import CustomAppProviderWithAuth from './pages/CustomAppProviderWithAuth.jsx';
+import SigninForm from './components/auth/signinform.jsx';
+import SignupForm from './components/auth/signupform.jsx';
+import ProtectedRoute from './components/routes/ProtectedRoute.jsx';
 
 const router = createBrowserRouter([
   {
     element: <CustomAppProviderWithAuth/>,
     children: [
+      {
+        path: '/signin',
+        element: <SigninForm />
+      },
+      {
+        path: '/signup',
+        element: <SignupForm />
+      },
       {
         path: '/',
         element: <App/>,
@@ -27,35 +38,35 @@ const router = createBrowserRouter([
           },
           {
             path: '/users',
-            element: <Users />,
+            element: <ProtectedRoute element={<Users />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/meters',
-            element: <Meters />,
+            element: <ProtectedRoute element={<Meters />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/meters/:id',
-            element: <EnergyMeterInfo />,
+            element: <ProtectedRoute element={<EnergyMeterInfo />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/stations',
-            element: <Stations />,
+            element: <ProtectedRoute element={<Stations />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/stations/:id',
-            element: <StationInfo />,
+            element: <ProtectedRoute element={<StationInfo />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/metering-points',
-            element: <MeteringPoints />,
+            element: <ProtectedRoute element={<MeteringPoints />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/metering-points/:id',
-            element: <MeteringPointInfo />,
+            element: <ProtectedRoute element={<MeteringPointInfo />} allowedRoles={['USER', 'ADMIN']} />,
           },
           {
             path: '/consumptions',
-            element: <Consumptions />,
+            element: <ProtectedRoute element={<Consumptions />} allowedRoles={['USER', 'ADMIN']} />,
           }
         ],
       },

@@ -2,6 +2,7 @@ import { Box, TextField, Button, FormControl, InputLabel,
     FormHelperText, Select, MenuItem } from '@mui/material';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeterForm = ({ onClose, loadMeter }) => {
     const [meter, setMeter] = useState({
@@ -18,6 +19,8 @@ const MeterForm = ({ onClose, loadMeter }) => {
         referenceVoltage: 0,
         midApprovalYear: 0,
     });
+
+    const { api } = useFetchWithAuth();
 
     useEffect(() => {
         if (loadMeter != null){
@@ -57,19 +60,17 @@ const MeterForm = ({ onClose, loadMeter }) => {
             try {
                 const url = meter.energyMeterId ? `http://localhost:8080/api/v1/meters/${meter.energyMeterId}` : `http://localhost:8080/api/v1/meters`;
                 const method = meter.energyMeterId ? 'PATCH' : 'POST';
-                const response = await fetch(url, {
-                    method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(meter),
-                });
-                if (response.ok) {
+                const response = method === 'PATCH' 
+                    ? await api.patch(url, meter) 
+                    : await api.post(url, meter);
+
+                const { data, status } = response;
+
+                if (status === 200 || status === 201) {
                     console.log('Meter created successfully');
                     onClose();
                 } else {
-                    const errorData = await response.json();
-                    console.error('Meter creation failed ' + errorData);
+                    console.error('Meter creation failed ' + data);
                 }
             } catch (error) {
                 console.error('Error:', error);

@@ -1,6 +1,7 @@
 import { Box } from "@mui/material"
 import ConsumptionCard from "./ConsumptionCard"
 import { useState, useEffect } from "react"
+import { useFetchWithAuth } from "../../hooks/useFetchWithAuth"
 
 
 const ConsumptionDashboard = () => {
@@ -8,14 +9,13 @@ const ConsumptionDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [ consumptions, setConsumptions ] = useState([]);
     const [ meteringPoints, setMeteringPoints ] = useState([]);
+    const { api } = useFetchWithAuth();
 
     const handleFetchMaxConsumptions = async () => {
         console.log('Fetching max consumptions');
 
         try {
-            const response = await fetch('https://localhost:8082/consumptions/max', {
-                method: 'GET'
-            });
+            const response = await api.get('https://localhost:8082/consumptions/max');
             if (response.ok){
                 const data = await response.json();
                 console.log(data);
@@ -33,9 +33,7 @@ const ConsumptionDashboard = () => {
         console.log("Fetching Metering Point with id: " + id);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/metering-points/${id}`, {
-                method: 'GET'
-            })
+            const response = await api.get(`http://localhost:8080/api/v1/metering-points/${id}`);
             if (response.ok){
                 const data = await response.json();
                 console.log(data);
@@ -78,9 +76,7 @@ const ConsumptionDashboard = () => {
             // Espera la carga de todos los meteringPoints
             const meteringPointsData = [];
             for (const consumption of mockConsumptions) {
-                const meteringPoint = await fetch(`http://localhost:8080/api/v1/metering-points/${consumption.meteringPointId}`, {
-                    method: 'GET'
-                });
+                const meteringPoint = await api.get(`http://localhost:8080/api/v1/metering-points/${consumption.meteringPointId}`);
                 if (meteringPoint.ok){
                     const data = await meteringPoint.json();
                     meteringPointsData.push(data);

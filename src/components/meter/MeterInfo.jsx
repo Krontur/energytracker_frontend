@@ -2,26 +2,24 @@ import { Container, Paper, Typography, Table, TableBody, TableCell, TableContain
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeterInfo = () => {
 
   const { id } = useParams();
+  const { api } = useFetchWithAuth();
 
   const [meterInfo, setMeterInfo] = useState({});
   const [calibrations, setCalibrations] = useState([]);
 
   const handleFetchMeterInfo = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/meters/${id}`, {
-        method: 'GET',  
-        });
-        if(response.ok) {
-          const data = await response.json();
+      const { data, status } = await api.get(`http://localhost:8080/api/v1/meters/${id}`);
+        if(status === 200) {
           setMeterInfo(data);
           setCalibrations(data.calibrationSchedules);
         } else {
-          const errorData = await response.json();
-          console.error('Error:', errorData);
+          console.error('Error:', data);
         }
     } catch (error) {
         console.error('Error:', error);

@@ -4,11 +4,14 @@ import { useState, useEffect } from 'react';
 import UserForm from './userform';
 import Modal from '@mui/material/Modal';
 import UserModal from './UserModal';
+import useRoleCheck from '../../hooks/useRoleCheck';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const UserList = () => {
-
+    const { isAdmin } = useRoleCheck();
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState({});
+    const { api } = useFetchWithAuth();
 
     useEffect(() => {
         handleFetchUsers();
@@ -23,16 +26,10 @@ const UserList = () => {
     const handleFetchUsers = async () => {
         console.log('fetching users');
         try {
-            const response = await fetch('http://localhost:8083/api/v1/users', {
-                method: 'GET',
-            });
-            if (response.ok) {
-                const data = await response.json();
+            const { data, status } = await api.get('http://localhost:8083/api/v1/users');
+            if (status === 200) {
                 console.log(data);
                 setUsers(data);
-            } else {
-                const errorData = await response.json();
-                console.error('Error:', errorData);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -54,6 +51,7 @@ const UserList = () => {
                     margin: '0 auto',
                     alignItems: 'end',
                 }}>
+            { isAdmin() && (
             <ButtonGroup sx={{ 
                 display: 'flex',
                 justifyContent: 'flex-end',
@@ -66,6 +64,7 @@ const UserList = () => {
                     }}
                 >new</Button>                
             </ButtonGroup>
+            )}
             <List
                 sx={{ width: '100%', 
                       maxWidth: '1280px',
@@ -162,15 +161,19 @@ const UserList = () => {
                         >
                             <ListItemIcon>
                                 <ButtonGroup>
-                                    <IconButton onClick={() => console.log(index)}>
-                                        <Delete />
-                                    </IconButton>
-                                    <IconButton onClick={() => {
-                                        setSelectedUser(user);
-                                        setCreateUserFormModal(true)
-                                    }}>
-                                        <Edit />
-                                    </IconButton>
+                                    { isAdmin() && (
+                                        <>
+                                            <IconButton onClick={() => console.log(index)}>
+                                                <Delete />
+                                            </IconButton>
+                                            <IconButton onClick={() => {
+                                                setSelectedUser(user);
+                                                setCreateUserFormModal(true)
+                                            }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </>
+                                    )}
                                     <IconButton onClick={() => {
                                         setSelectedUser(user);
                                         setViewUserFormModal(true)

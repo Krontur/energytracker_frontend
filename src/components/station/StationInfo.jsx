@@ -5,10 +5,12 @@ import Close from '@mui/icons-material/Close';
 import ChannelForm from '../Channel/ChannelForm'
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const StationInfo = () => {
 
     const { id } = useParams();
+    const { api } = useFetchWithAuth();
 
     const [stationInfo, setStationInfo] = useState({});
     const [channels, setChannels] = useState([]);
@@ -18,16 +20,12 @@ const StationInfo = () => {
 
     const handleFetchStationInfo = async () => {
         try {
-        const response = await fetch(`http://localhost:8080/api/v1/stations/${id}`, {
-            method: 'GET',  
-            });
-            if(response.ok) {
-            const data = await response.json();
+        const { data, status } = await api.get(`http://localhost:8080/api/v1/stations/${id}`);
+            if(status === 200) {
             setStationInfo(data);
             setChannels(data.channelList);
             } else {
-            const errorData = await response.json();
-            console.error('Error:', errorData);
+            console.error('Error:', data);
             }
         } catch (error) {
             console.error('Error:', error);

@@ -2,10 +2,12 @@ import { Container, Paper, Typography, Button, Box } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeteringPointInfo = () => {
 
     const { id } = useParams();
+    const { api } = useFetchWithAuth();
 
     const [meteringPointInfo, setMeteringPointInfo] = useState({});
     const [channel, setChannel] = useState(null);
@@ -13,18 +15,14 @@ const MeteringPointInfo = () => {
 
     const handleFetchMeteringPointInfo = async () => {
         try {
-        const response = await fetch(`http://localhost:8080/api/v1/metering-points/${id}`, {
-            method: 'GET',  
-            });
-            if(response.ok) {
-            const data = await response.json();
-            console.log(data);
-            setMeteringPointInfo(data);
-            setChannel(data.channel);
-            setEnergyMeter(data.energyMeter);
+        const { data, status } = await api.get(`http://localhost:8080/api/v1/metering-points/${id}`);
+            if(status === 200) {
+                console.log(data);
+                setMeteringPointInfo(data);
+                setChannel(data.channel);
+                setEnergyMeter(data.energyMeter);
             } else {
-            const errorData = await response.json();
-            console.error('Error:', errorData);
+                console.error('Error:', data);
             }
         } catch (error) {
             console.error('Error:', error);

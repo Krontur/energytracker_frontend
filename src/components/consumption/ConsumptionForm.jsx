@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -21,6 +22,8 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
     endTime: null,
   });
 
+  const { api } = useFetchWithAuth();
+
   const [views, setViews] = useState(['day', 'month', 'year']);
   const [meteringPoints, setMeteringPoints] = useState([]);
   const [error, setError] = useState(null);
@@ -33,9 +36,7 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
   const handleFetchMeteringPoints = async () => {
     console.log('Fetching metering points');
     try {
-      const response = await fetch('http://localhost:8082/api/v1/metering-points', {
-        method: 'GET',
-      });
+      const response = await api.get('http://localhost:8082/api/v1/metering-points');
 
       if (response.ok) {
         const data = await response.json();
@@ -96,13 +97,7 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
     console.log(JSON.stringify(payload));
 
     try {
-      const res = await fetch('http://localhost:8082/api/v1/consumptions/metering-point/interval', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await api.post('http://localhost:8082/api/v1/consumptions/metering-point/interval');
 
       if (!res.ok) {
         throw new Error('Network response was not ok');

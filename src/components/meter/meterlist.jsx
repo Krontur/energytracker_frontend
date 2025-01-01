@@ -4,10 +4,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MeterForm from './meterform';
 import Modal from '@mui/material/Modal';
+import useRoleCheck from '../../hooks/useRoleCheck';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeterList = () => {
-
+    const { isAdmin } = useRoleCheck();
     const navigate = useNavigate();
+    const { api } = useFetchWithAuth();
 
     const [meters, setMeters] = useState([]);
     const [selectedMeter, setSelectedMeter] = useState({});
@@ -24,16 +27,12 @@ const MeterList = () => {
     const handleFetchMeters = async () => {
         console.log('fetching meters');
         try {
-            const response = await fetch('http://localhost:8080/api/v1/meters', {
-                method: 'GET',
-            });
-            if (response.ok) {
-                const data = await response.json();
+            const { data, status} = await api.get('http://localhost:8080/api/v1/meters');
+            if (status === 200) {
                 console.log(data);
                 setMeters(data);
             } else {
-                const errorData = await response.json();
-                console.error('Error:', errorData);
+                console.error('Error:', data);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -54,18 +53,20 @@ const MeterList = () => {
                     margin: '0 auto',
                     alignItems: 'end',
                 }}>
-            <ButtonGroup sx={{ 
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'end'
-            }}>
-                <Button
-                    onClick={() => {
-                        setSelectedMeter(null)
-                        setCreateMeterModal(true)
-                    }}
-                >new</Button>                
-            </ButtonGroup>
+            { isAdmin() && (
+                <ButtonGroup sx={{ 
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'end'
+                }}>
+                    <Button
+                        onClick={() => {
+                            setSelectedMeter(null)
+                            setCreateMeterModal(true)
+                        }}
+                    >new</Button>                
+                </ButtonGroup>
+            )}
             <List
                 sx={{ width: '100%', 
                       maxWidth: '1280px',
@@ -162,16 +163,20 @@ const MeterList = () => {
                         >
                             <ListItemIcon>
                                 <ButtonGroup>
-                                    <IconButton onClick={() => console.log(meter.energyMeterId)}>
-                                        <Delete />
-                                    </IconButton>
-                                    <IconButton onClick={() => {
-                                        setSelectedMeter(meter)
-                                        setCreateMeterModal(true)
+                                    { isAdmin() && (
+                                        <>
+                                            <IconButton onClick={() => console.log(meter.energyMeterId)}>
+                                                <Delete />
+                                            </IconButton>
+                                            <IconButton onClick={() => {
+                                                setSelectedMeter(meter)
+                                                setCreateMeterModal(true)
 
-                                    }}>
-                                        <Edit />
-                                    </IconButton>
+                                            }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </>
+                                    )}
                                     <IconButton onClick={() =>
                                         {
                                             setSelectedMeter(meter);

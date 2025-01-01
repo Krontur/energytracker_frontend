@@ -101,13 +101,17 @@ function useRouter(initialPath) {
 function CustomAppProvider() {
   const location = useLocation();
   const router = useRouter(location.pathname);  
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const navigation = useMemo(() => {
-    return isAuthenticated
-      ? [...NAVIGATION.public, ...NAVIGATION.private]
-      : NAVIGATION.public;
-  }, [isAuthenticated]);
+    if (!isAuthenticated) {
+      return NAVIGATION.public;
+    }
+    if (user?.role === 'ADMIN') {
+      return [...NAVIGATION.public, ...NAVIGATION.private];
+    }
+    return [...NAVIGATION.public, ...NAVIGATION.private];
+  }, [isAuthenticated, user]);
 
   return (
     <AppProvider

@@ -2,6 +2,7 @@ import { Box, TextField, Button, FormControl, InputLabel,
     FormHelperText, Select, MenuItem } from '@mui/material';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeterForm = ({ onClose, loadStation }) => {
     const [station, setStation] = useState({
@@ -14,10 +15,11 @@ const MeterForm = ({ onClose, loadStation }) => {
         stationTag: '',
         readingIntervalInSeconds: 900,
     });
+    
+    const { api } = useFetchWithAuth();
 
     useEffect(() => {
         if (loadStation != null) {
-            // Filtrar solo las claves que existen en el estado inicial
             const filteredStation = Object.keys(station).reduce((acc, key) => {
                 if (Object.prototype.hasOwnProperty.call(loadStation, key)) {
                     acc[key] = loadStation[key];
@@ -47,18 +49,16 @@ const MeterForm = ({ onClose, loadStation }) => {
                 const url = station.stationId ? `http://localhost:8080/api/v1/stations/${station.stationId}` : `http://localhost:8080/api/v1/stations`;
                 const method = station.stationId ? 'PATCH' : 'POST'; // Método HTTP
 
-                const response = await fetch(url, {
-                    method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(station),
-                });
-                if (response.ok) {
+                const response = method === 'PATCH' 
+                    ? await api.patch(url, station) 
+                    : await api.post(url, station);
+
+                const { data, status } = response;
+                
+                if (status === 200 || status === 201) {
                     onClose();
                 } else {
-                    const errorData = await response.json();
-                    console.error('Station creation failed ' + errorData);
+                    console.error('Station creation failed ' + data);
                 }
             } catch (error) {
                 console.error('Error:', error);

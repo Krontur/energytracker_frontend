@@ -4,11 +4,13 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 
 const UserForm = ({ onClose, loadUser }) => {
 
     const navigate = useNavigate();
+    const { api } = useFetchWithAuth();
 
     const [passwordRepeat, setPasswordRepeat] = useState('');
     const [password, setPassword] = useState('');
@@ -106,24 +108,20 @@ const UserForm = ({ onClose, loadUser }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const url = user.userAccountId ? `http://localhost:8083/api/v1/users/${user.userAccountId}` : `http://localhost:8083/api/v1/users`;
-                const method = user.userAccountId ? 'PATCH' : 'POST';
+                const url = user.userAccountId 
+                    ? `http://localhost:8083/api/v1/users/${user.userAccountId}`
+                    : `http://localhost:8083/api/v1/users`;
 
-                const response = await fetch(url, {
-                    method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(user),
-                });
-                if (response.ok) {
-                    const data = await response.json();
+                const { data, status } = user.userAccountId 
+                    ? await api.patch(url, user)
+                    : await api.post(url, user);
+
+                if (status === 200 || status === 201) {
                     console.log('Success:', data);
                     onClose();
                     navigate('/users');
                 } else {
-                    const errorData = await response.json();
-                    console.error('Error:', errorData);
+                    console.error('Error:', data);
                 }
             } catch (error) {
                 console.error('Error:', error);

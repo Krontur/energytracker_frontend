@@ -3,15 +3,18 @@ import { Delete, Edit, Visibility, Close } from "@mui/icons-material"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import StationForm from "./StationForm"
+import useRoleCheck from "../../hooks/useRoleCheck"
+import { useFetchWithAuth } from "../../hooks/useFetchWithAuth"
 
 
 const StationList = () => {
-
+    const { isAdmin } = useRoleCheck();
     const [stations, setStations] = useState([]);
     const [selectedStation, setSelectedStation] = useState({});
     const [createStationModal, setCreateStationModal] = useState(false);
 
     const navigate = useNavigate();
+    const { api } = useFetchWithAuth();
 
     useEffect(() => {
         handleFetchStations();
@@ -25,18 +28,12 @@ const StationList = () => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/stations',
-                {
-                method: 'GET',
-                }
-            );
-            if (response.ok) {
-                const data = await response.json();
+            const { data, status } = await api.get('http://localhost:8080/api/v1/stations');
+            if (status === 200) {
                 console.log(data);
                 setStations(data);
                 } else {
-                    const errorData = await response.json();
-                    console.error('Error:', errorData);
+                    console.error('Error:', data);
             }} catch (error) {
                 console.error('Error:', error);
             }}
@@ -55,6 +52,7 @@ const StationList = () => {
                 alignItems: 'end'
             }}
         >
+            { isAdmin() && (
             <ButtonGroup sx={{ 
                 display: 'flex',
                 justifyContent: 'flex-end',
@@ -67,6 +65,7 @@ const StationList = () => {
                     }}
                 >new</Button>                
             </ButtonGroup>
+            )}
             <List
                 sx={{ width: '100%', 
                       maxWidth: '1280px',
@@ -163,15 +162,19 @@ const StationList = () => {
                         >
                             <ListItemIcon>
                                 <ButtonGroup>
-                                    <IconButton onClick={() => console.log(station.stationId)}>
-                                        <Delete />
-                                    </IconButton>
-                                    <IconButton onClick={() => {
-                                        setSelectedStation(station);
-                                        setCreateStationModal(true);
-                                    }}>
-                                        <Edit />
-                                    </IconButton>
+                                    { isAdmin() && (
+                                        <>
+                                            <IconButton onClick={() => console.log(station.stationId)}>
+                                                <Delete />
+                                            </IconButton>
+                                            <IconButton onClick={() => {
+                                                setSelectedStation(station);
+                                                setCreateStationModal(true);
+                                            }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </>
+                                    )}
                                     <IconButton onClick={() =>
                                         {
                                             setSelectedStation(station);

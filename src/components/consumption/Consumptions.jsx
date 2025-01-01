@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ConsumptionChart from './ConsumptionChart';
 import ConsumptionForm from './ConsumptionForm';
 import { Box, Typography } from '@mui/material';

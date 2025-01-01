@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, TextField, Button, FormControl, Autocomplete, Switch, FormLabel, FormControlLabel } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
 const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
@@ -14,6 +15,8 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
         activeStatus: true,
 
     });
+
+    const { api } = useFetchWithAuth();
 
     const [selectedStation, setSelectedStation] = useState(null);
     const [selectedChannel, setSelectedChannel] = useState(null);
@@ -111,22 +114,16 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
         try {
             const url = meteringPoint.meteringPointId ? `http://localhost:8080/api/v1/metering-points/${meteringPoint.meteringPointId}` : `http://localhost:8080/api/v1/metering-points`;
             const method = meteringPoint.meteringPointId ? 'PATCH' : 'POST'; 
+            
+            const response = method === 'PATCH' 
+                ? await api.patch(url, meteringPoint) 
+                : await api.post(url, meteringPoint);
 
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(meteringPoint),
-            });
-            if (!response.ok) {
-                const errorResponse = await response.json().catch(() => {
-                    throw new Error('Error creating Metering Point');
-                });
-                console.error('Server error: ', errorResponse);
+            const { data, status } = response;
+            if (status !== 200) {
+                console.error('Error creating Metering Point: ', data);
                 return;
             }
-            const data = await response.json();
             console.log(data);
             onClose();
             handleFetchMeteringPoints();
@@ -138,7 +135,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/stations');
+            const response = await api.get('http://localhost:8080/api/v1/stations');
             const data = await response.json();
             setStations(data);
             } catch (error) {
@@ -148,7 +145,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchEnergyMeters = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/meters');
+            const response = await api.get('http://localhost:8080/api/v1/meters');
             const data = await response.json();
             setMeters(data);
             } catch (error) {
@@ -158,7 +155,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/metering-points');
+            const response = await api.get('http://localhost:8080/api/v1/metering-points');
             const data = await response.json();
             setMeteringPoints(data);
             } catch (error) {

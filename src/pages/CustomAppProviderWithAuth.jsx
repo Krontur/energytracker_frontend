@@ -54,7 +54,7 @@ const BRANDING = {
     title: 'Energy Tracker',
     logo: (
         <Box sx={{ height: '40px', width: 'auto', display: 'flex', alignItems: 'center' }}>
-          <img src="/src/assets/react.svg" alt="Energy Tracker" style={{ maxHeight: '100%', width: 'auto' }} />
+          <img src="../assets/react.svg" alt="Energy Tracker" style={{ maxHeight: '100%', width: 'auto' }} />
         </Box>
       ),
   };

@@ -12,8 +12,8 @@ import Consumptions from './components/consumption/Consumptions.jsx';
 import Home from './pages/Home.jsx';
 import App from './layouts/App.jsx';
 import CustomAppProviderWithAuth from './pages/CustomAppProviderWithAuth.jsx';
-import SigninForm from './components/auth/signinform.jsx';
-import SignupForm from './components/auth/signupform.jsx';
+import SigninForm from './components/auth/SigninForm.jsx';
+import SignupForm from './components/auth/SignupForm.jsx';
 import ProtectedRoute from './components/routes/ProtectedRoute.jsx';
 
 const router = createBrowserRouter([

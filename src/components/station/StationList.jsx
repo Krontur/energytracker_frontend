@@ -1,5 +1,5 @@
 import { Box, List, ListItem, Button, ButtonGroup, ListItemText, IconButton, ListItemIcon, Modal } from "@mui/material"
-import { Delete, Edit, Visibility, Close } from "@mui/icons-material"
+import { Edit, Visibility, Close } from "@mui/icons-material"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import StationForm from "./StationForm"
@@ -163,17 +163,12 @@ const StationList = () => {
                             <ListItemIcon>
                                 <ButtonGroup>
                                     { isAdmin() && (
-                                        <>
-                                            <IconButton onClick={() => console.log(station.stationId)}>
-                                                <Delete />
-                                            </IconButton>
                                             <IconButton onClick={() => {
                                                 setSelectedStation(station);
                                                 setCreateStationModal(true);
                                             }}>
                                                 <Edit />
                                             </IconButton>
-                                        </>
                                     )}
                                     <IconButton onClick={() =>
                                         {

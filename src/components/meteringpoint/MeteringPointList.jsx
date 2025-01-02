@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Button, ButtonGroup, IconButton, List, ListItem, ListItemText, Modal, ListItemIcon, FormControlLabel, Switch } from '@mui/material';
-import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
+import { Edit, Visibility, Close } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import MeteringPointForm from './MeteringPointForm';
 import useRoleCheck from '../../hooks/useRoleCheck';
@@ -176,6 +176,7 @@ const MeteringPointList = () => {
                                     <Switch
                                         type="checkbox"
                                         checked={meteringPoint.activeStatus}
+                                        disabled
                                     />
                                 }
                                 label="Active"
@@ -193,17 +194,12 @@ const MeteringPointList = () => {
                             <ListItemIcon>
                                 <ButtonGroup>
                                     { isAdmin() && (
-                                        <>
-                                            <IconButton onClick={() => console.log(meteringPoint.meteringPointId)}>
-                                                <Delete />
-                                            </IconButton>
                                             <IconButton onClick={() => {
                                                 setSelectedMeteringPoint(meteringPoint);
                                                 setCreateMeteringPointModal(true);
                                             }}>
                                                 <Edit />
                                             </IconButton>
-                                        </>
                                     )}
                                     <IconButton onClick={() =>
                                         {

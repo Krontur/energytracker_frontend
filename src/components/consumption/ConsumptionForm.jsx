@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, Typography, Box, FormControl, InputLabel, Select } from '@mui/material';
+import { TextField, Button, MenuItem, Typography, Box, FormControl, InputLabel, Select, Checkbox } from '@mui/material';
 import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import PropTypes from 'prop-types';
@@ -14,7 +14,7 @@ const localZone = dayjs.tz.guess();
 
 const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
   const [formData, setFormData] = useState({
-    meteringPointId: '',
+    meteringPointId: [],
     intervalType: 'INTERVAL',
     startDate: null,
     startTime: null,
@@ -33,17 +33,26 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
   const MAX_SELECTABLE_DAY = dayjs().subtract(1, 'day');
   const MIN_SELECTABLE_DAY = dayjs().subtract(3, 'year');
 
+  const [warning, setWarning] = useState('');
+
+const handleSelectionChange = (selectedValues) => {
+  if (selectedValues.length > 3) {
+    setWarning('You can select up to 3 items only.');
+  } else {
+    setWarning('');
+    handleInputChange('meteringPointId', selectedValues);
+  }
+};
+
   const handleFetchMeteringPoints = async () => {
     console.log('Fetching metering points');
     try {
-      const response = await api.get('http://localhost:8082/api/v1/metering-points');
+      const { data, status } = await api.get('http://localhost:8082/api/v1/metering-points');
 
-      if (response.ok) {
-        const data = await response.json();
+      if (status) {
         setMeteringPoints(data);
       } else {
-        const errorData = await response.json();
-        console.log(errorData);
+        console.log(data);
       }
     } catch (error) {
       console.log(error);
@@ -88,32 +97,38 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
       .tz(localZone)
       .format('YYYY-MM-DDTHH:mm:ss');
 
-    const payload = {
-      meteringPointId: formData.meteringPointId,
+    const payloadBase = {
       intervalType: formData.intervalType,
       startDateTime,
       endDateTime,
     };
-    console.log(JSON.stringify(payload));
 
     try {
-      const res = await api.post('http://localhost:8082/api/v1/consumptions/metering-point/interval');
-
-      if (!res.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      if (res.status === 204 || res.status === 404) {
+      const consumptionPromises = formData.meteringPointId.map(async (meteringPointId) => {
+        const payload = { ...payloadBase, meteringPointId };
+        const response = await api.post('http://localhost:8082/api/v1/consumptions/metering-point/interval', payload);
+        return response.data;
+      });
+  
+      const results = await Promise.all(consumptionPromises);
+  
+      const consumptionMatrix = results.map((consumptionList, index) => {
+        return {
+          meteringPointId: formData.meteringPointId[index],
+          consumptions: consumptionList,
+        };
+      });
+  
+      if (consumptionMatrix.every((row) => row.consumptions.length === 0)) {
         setConsumptions([]);
         setIntervalType(formData.intervalType);
         setError('No data found for the selected interval');
         return;
       }
-
-      const data = await res.json();
-      setConsumptions(data);
+  
+      setConsumptions(consumptionMatrix);
       setIntervalType(formData.intervalType);
-      console.log(data);
+      console.log(consumptionMatrix);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Error while performing the query.');
@@ -174,20 +189,26 @@ const ConsumptionForm = ({ setConsumptions, setIntervalType }) => {
             gap={3}
           >
             <FormControl fullWidth>
-              <InputLabel id="metering-point-select-label">Metering Point ID</InputLabel>
+              <InputLabel id="metering-point-select-label">Metering Point IDs</InputLabel>
               <Select
                 labelId="metering-point-select-label"
+                multiple
                 value={formData.meteringPointId}
-                onChange={(e) => handleInputChange('meteringPointId', e.target.value)}
+                onChange={(e) => handleSelectionChange(e.target.value)}
+                renderValue={(selected) => selected.join(', ')}
                 required
+                {...(warning && { error: true })}
               >
                 {meteringPoints.map((meteringPoint) => (
                   <MenuItem key={meteringPoint.meteringPointId} value={meteringPoint.meteringPointId}>
+                    <Checkbox checked={formData.meteringPointId.includes(meteringPoint.meteringPointId)} />
                     {meteringPoint.meteringPointId}
                   </MenuItem>
                 ))}
               </Select>
+              {warning && <Typography color="error">{warning}</Typography>}
             </FormControl>
+
             <TextField
               label="Interval Type"
               name="intervalType"

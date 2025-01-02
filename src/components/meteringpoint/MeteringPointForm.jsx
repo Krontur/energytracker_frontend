@@ -135,8 +135,11 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchStations = async () => {
         try {
-            const response = await api.get('http://localhost:8080/api/v1/stations');
-            const data = await response.json();
+            const { data, status } = await api.get('http://localhost:8080/api/v1/stations');
+            if (status !== 200) {
+                console.error('Error:', data);
+                return;
+            }
             setStations(data);
             } catch (error) {
                 console.error('Error:', error);
@@ -145,8 +148,11 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchEnergyMeters = async () => {
         try {
-            const response = await api.get('http://localhost:8080/api/v1/meters');
-            const data = await response.json();
+            const { data, status } = await api.get('http://localhost:8080/api/v1/meters');
+            if (status !== 200) {
+                console.error('Error:', data);
+                return;
+            }
             setMeters(data);
             } catch (error) {
                 console.error('Error:', error);
@@ -155,8 +161,11 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const response = await api.get('http://localhost:8080/api/v1/metering-points');
-            const data = await response.json();
+            const { data, status } = await api.get('http://localhost:8080/api/v1/metering-points');
+            if (status !== 200) {
+                console.error('Error:', data);
+                return;
+            }
             setMeteringPoints(data);
             } catch (error) {
                 console.error('Error:', error);

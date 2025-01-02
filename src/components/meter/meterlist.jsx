@@ -1,5 +1,5 @@
 import { Box, List, ListItem, ListItemIcon, ListItemText, IconButton, ButtonGroup, Button } from '@mui/material';
-import { Delete, Edit, Visibility, Close } from '@mui/icons-material';
+import { Edit, Visibility, Close } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MeterForm from './meterform';
@@ -164,10 +164,6 @@ const MeterList = () => {
                             <ListItemIcon>
                                 <ButtonGroup>
                                     { isAdmin() && (
-                                        <>
-                                            <IconButton onClick={() => console.log(meter.energyMeterId)}>
-                                                <Delete />
-                                            </IconButton>
                                             <IconButton onClick={() => {
                                                 setSelectedMeter(meter)
                                                 setCreateMeterModal(true)
@@ -175,7 +171,6 @@ const MeterList = () => {
                                             }}>
                                                 <Edit />
                                             </IconButton>
-                                        </>
                                     )}
                                     <IconButton onClick={() =>
                                         {

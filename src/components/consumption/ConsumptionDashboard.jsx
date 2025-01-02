@@ -15,14 +15,12 @@ const ConsumptionDashboard = () => {
         console.log('Fetching max consumptions');
 
         try {
-            const response = await api.get('https://localhost:8082/consumptions/max');
-            if (response.ok){
-                const data = await response.json();
+            const { data, status } = await api.get('https://localhost:8082/consumptions/max');
+            if (status === 200){
                 console.log(data);
                 setConsumptions(data);
             } else {
-                const errorData = await response.json();
-                console.log(errorData);
+                console.log(data);
             }
         } catch (error){
             console.log(error);
@@ -33,9 +31,8 @@ const ConsumptionDashboard = () => {
         console.log("Fetching Metering Point with id: " + id);
 
         try {
-            const response = await api.get(`http://localhost:8080/api/v1/metering-points/${id}`);
-            if (response.ok){
-                const data = await response.json();
+            const { data, status} = await api.get(`http://localhost:8080/api/v1/metering-points/${id}`);
+            if (status === 200){
                 console.log(data);
                 setMeteringPoints((prev) => [ ...prev, data ]);
             }
@@ -76,9 +73,8 @@ const ConsumptionDashboard = () => {
             // Espera la carga de todos los meteringPoints
             const meteringPointsData = [];
             for (const consumption of mockConsumptions) {
-                const meteringPoint = await api.get(`http://localhost:8080/api/v1/metering-points/${consumption.meteringPointId}`);
-                if (meteringPoint.ok){
-                    const data = await meteringPoint.json();
+                const { data, status} = await api.get(`http://localhost:8080/api/v1/metering-points/${consumption.meteringPointId}`);
+                if (status === 200){
                     meteringPointsData.push(data);
                 }
             }

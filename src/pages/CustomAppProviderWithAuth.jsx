@@ -5,6 +5,7 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import ReactLogo from '../assets/react.svg';
 
 const NAVIGATION = {
   public: [
@@ -54,7 +55,7 @@ const BRANDING = {
     title: 'Energy Tracker',
     logo: (
         <Box sx={{ height: '40px', width: 'auto', display: 'flex', alignItems: 'center' }}>
-          <img src="../assets/react.svg" alt="Energy Tracker" style={{ maxHeight: '100%', width: 'auto' }} />
+          <img src={ReactLogo} alt="Energy Tracker" style={{ maxHeight: '100%', width: 'auto' }} />
         </Box>
       ),
   };

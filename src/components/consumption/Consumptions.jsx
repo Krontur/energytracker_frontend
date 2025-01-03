@@ -4,6 +4,7 @@ import ConsumptionChartLines from './ConsumptionChartLines';
 import ConsumptionForm from './ConsumptionForm';
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, TablePagination } from '@mui/material';
+import exportFromJSON from 'export-from-json';
 
 const Consumptions = () => {
   const [consumptions, setConsumptions] = useState(null);
@@ -42,6 +43,20 @@ const Consumptions = () => {
       : '-';
   };
 
+  const handleDownloadCSV = () => {
+    const data = consumptions.flatMap((dataset) => 
+      dataset.consumptions.map((item) => ({
+        meteringPointId: dataset.meteringPointId,
+        timestamp: item.consumptionTimestamp,
+        value: item.consumptionValue.toFixed(2),
+      }))
+    );
+
+    const fileName = 'consumptions';
+    const exportType = 'csv';
+    exportFromJSON({ data, fileName, exportType });
+  };
+
   return (
     <Box
       component="main"
@@ -65,14 +80,22 @@ const Consumptions = () => {
       <ConsumptionForm setConsumptions={setConsumptions} setIntervalType={setIntervalType} />
 
       {consumptions && consumptions.length > 0 && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleToggleTable}
-          sx={{ mt: 2 }}
-        >
-          {showTable ? 'Hide Table' : 'Show as Table'}
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleToggleTable}
+          >
+            {showTable ? 'Hide Table' : 'Show as Table'}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleDownloadCSV}
+          >
+            Download CSV
+          </Button>
+        </Box>
       )}
 
       {consumptions && consumptions.length > 0 && (

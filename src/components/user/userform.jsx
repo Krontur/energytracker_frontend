@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 
 const UserForm = ({ onClose, loadUser }) => {
 
@@ -109,8 +111,8 @@ const UserForm = ({ onClose, loadUser }) => {
         if (validateForm()) {
             try {
                 const url = user.userAccountId 
-                    ? `http://localhost:8083/api/v1/users/${user.userAccountId}`
-                    : `http://localhost:8083/api/v1/users`;
+                    ? `${VITE_API_BASE_URL}:8083/api/v1/users/${user.userAccountId}`
+                    : `${VITE_API_BASE_URL}:8083/api/v1/users`;
 
                 const { data, status } = user.userAccountId 
                     ? await api.patch(url, user)

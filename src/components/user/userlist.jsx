@@ -7,6 +7,8 @@ import UserModal from './UserModal';
 import useRoleCheck from '../../hooks/useRoleCheck';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const UserList = () => {
     const { isAdmin } = useRoleCheck();
     const [users, setUsers] = useState([]);
@@ -26,7 +28,7 @@ const UserList = () => {
     const handleFetchUsers = async () => {
         console.log('fetching users');
         try {
-            const { data, status } = await api.get('http://localhost:8083/api/v1/users');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8083/api/v1/users`);
             if (status === 200) {
                 console.log(data);
                 setUsers(data);

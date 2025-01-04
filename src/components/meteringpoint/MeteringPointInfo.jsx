@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const MeteringPointInfo = () => {
 
     const { id } = useParams();
@@ -15,7 +17,7 @@ const MeteringPointInfo = () => {
 
     const handleFetchMeteringPointInfo = async () => {
         try {
-        const { data, status } = await api.get(`http://localhost:8080/api/v1/metering-points/${id}`);
+        const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/metering-points/${id}`);
             if(status === 200) {
                 console.log(data);
                 setMeteringPointInfo(data);

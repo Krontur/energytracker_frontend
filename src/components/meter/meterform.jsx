@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const MeterForm = ({ onClose, loadMeter }) => {
     const [meter, setMeter] = useState({
         energyMeterId: '',
@@ -58,7 +60,7 @@ const MeterForm = ({ onClose, loadMeter }) => {
         console.log(meter);
         if (validateForm()) {
             try {
-                const url = meter.energyMeterId ? `http://localhost:8080/api/v1/meters/${meter.energyMeterId}` : `http://localhost:8080/api/v1/meters`;
+                const url = meter.energyMeterId ? `${VITE_API_BASE_URL}:8080/api/v1/meters/${meter.energyMeterId}` : `${VITE_API_BASE_URL}:8080/api/v1/meters`;
                 const method = meter.energyMeterId ? 'PATCH' : 'POST';
                 const response = method === 'PATCH' 
                     ? await api.patch(url, meter) 

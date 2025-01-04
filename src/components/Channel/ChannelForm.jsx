@@ -3,6 +3,7 @@ import { Box, TextField, Button, FormControl, InputLabel, Select, MenuItem, Form
     FormControlLabel, Switch, FormLabel } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useFetchWithAuth } from "../../hooks/useFetchWithAuth";
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
 
 
 const ChannelForm = ({ onClose, loadChannel }) => {
@@ -104,7 +105,7 @@ const ChannelForm = ({ onClose, loadChannel }) => {
         e.preventDefault();
         if (validateForm()) {
             try {
-                const response = await api.post('http://localhost:8080/api/v1/channels', channel);
+                const response = await api.post(`${VITE_API_BASE_URL}:8080/api/v1/channels`, channel);
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);

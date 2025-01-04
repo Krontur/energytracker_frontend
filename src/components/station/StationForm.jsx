@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const MeterForm = ({ onClose, loadStation }) => {
     const [station, setStation] = useState({
         stationId: '',
@@ -41,12 +43,14 @@ const MeterForm = ({ onClose, loadStation }) => {
     const [readingIntervalInSecondsError, setReadingIntervalInSecondsError] = useState(false);
     const [readingIntervalInSecondsErrorMessage, setReadingIntervalInSecondsErrorMessage] = useState('');
 
+
+
     async function handleSubmit (event) {
         event.preventDefault();
         console.log(station);
         if (validateForm()) {
             try {
-                const url = station.stationId ? `http://localhost:8080/api/v1/stations/${station.stationId}` : `http://localhost:8080/api/v1/stations`;
+                const url = station.stationId ? `${VITE_API_BASE_URL}:8080/api/v1/stations/${station.stationId}` : `${VITE_API_BASE_URL}:8080/api/v1/stations`;
                 const method = station.stationId ? 'PATCH' : 'POST'; // Método HTTP
 
                 const response = method === 'PATCH' 
@@ -110,7 +114,7 @@ const MeterForm = ({ onClose, loadStation }) => {
                 component="form"
                 sx={{
                     display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr', md: '1fr 1fr' }, // 1 columna en pantallas pequeñas, 2 columnas en medianas y grandes
+                    gridTemplateColumns: { xs: '1fr', sm: '1fr', md: '1fr 1fr' },
                     gap: '1rem',
                     width: '100%',
                     maxWidth: '640px',

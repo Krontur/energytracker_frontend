@@ -6,6 +6,8 @@ import StationForm from "./StationForm"
 import useRoleCheck from "../../hooks/useRoleCheck"
 import { useFetchWithAuth } from "../../hooks/useFetchWithAuth"
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 
 const StationList = () => {
     const { isAdmin } = useRoleCheck();
@@ -28,7 +30,7 @@ const StationList = () => {
 
     const handleFetchStations = async () => {
         try {
-            const { data, status } = await api.get('http://localhost:8080/api/v1/stations');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/stations`);
             if (status === 200) {
                 console.log(data);
                 setStations(data);

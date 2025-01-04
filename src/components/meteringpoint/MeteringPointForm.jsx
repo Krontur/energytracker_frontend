@@ -3,6 +3,8 @@ import { Box, TextField, Button, FormControl, Autocomplete, Switch, FormLabel, F
 import PropTypes from 'prop-types';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const [meteringPoint, setMeteringPoint] = useState({
@@ -135,7 +137,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchStations = async () => {
         try {
-            const { data, status } = await api.get('http://localhost:8080/api/v1/stations');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/stations`);
             if (status !== 200) {
                 console.error('Error:', data);
                 return;
@@ -148,7 +150,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchEnergyMeters = async () => {
         try {
-            const { data, status } = await api.get('http://localhost:8080/api/v1/meters');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/meters`);
             if (status !== 200) {
                 console.error('Error:', data);
                 return;
@@ -161,7 +163,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const { data, status } = await api.get('http://localhost:8080/api/v1/metering-points');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/metering-points`);
             if (status !== 200) {
                 console.error('Error:', data);
                 return;

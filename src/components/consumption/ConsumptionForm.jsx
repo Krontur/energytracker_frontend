@@ -8,6 +8,8 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const localZone = dayjs.tz.guess();
@@ -47,7 +49,7 @@ const handleSelectionChange = (selectedValues) => {
   const handleFetchMeteringPoints = async () => {
     console.log('Fetching metering points');
     try {
-      const { data, status } = await api.get('http://localhost:8082/api/v1/metering-points');
+      const { data, status } = await api.get(`${VITE_API_BASE_URL}:8082/api/v1/metering-points`);
 
       if (status) {
         setMeteringPoints(data);
@@ -106,7 +108,7 @@ const handleSelectionChange = (selectedValues) => {
     try {
       const consumptionPromises = formData.meteringPointId.map(async (meteringPointId) => {
         const payload = { ...payloadBase, meteringPointId };
-        const response = await api.post('http://localhost:8082/api/v1/consumptions/metering-point/interval', payload);
+        const response = await api.post(`${VITE_API_BASE_URL}:8082/api/v1/consumptions/metering-point/interval`, payload);
         return response.data;
       });
   

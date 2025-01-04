@@ -3,6 +3,8 @@ import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -60,7 +62,7 @@ export function AuthProvider({ children }) {
 
   const refreshAccessToken = async () => {
     try {
-      const response = await fetch('http://localhost:8083/api/v1/auth/refresh', {
+      const response = await fetch(`${VITE_API_BASE_URL}:8083/api/v1/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +87,7 @@ export function AuthProvider({ children }) {
 
   const signin = async (credentials) => {
     try {
-      const response = await fetch('http://localhost:8083/api/v1/auth/login', {
+      const response = await fetch(`${VITE_API_BASE_URL}:8083/api/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +111,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (userData) => {
     try {
-      const response = await fetch('http://localhost:8083/api/v1/auth/register', {
+      const response = await fetch(`${VITE_API_BASE_URL}:8083/api/v1/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

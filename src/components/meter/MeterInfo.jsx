@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const MeterInfo = () => {
 
   const { id } = useParams();
@@ -14,7 +16,7 @@ const MeterInfo = () => {
 
   const handleFetchMeterInfo = async () => {
     try {
-      const { data, status } = await api.get(`http://localhost:8080/api/v1/meters/${id}`);
+      const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/meters/${id}`);
         if(status === 200) {
           setMeterInfo(data);
           setCalibrations(data.calibrationSchedules);

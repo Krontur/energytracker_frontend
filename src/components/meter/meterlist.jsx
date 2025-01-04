@@ -7,6 +7,8 @@ import Modal from '@mui/material/Modal';
 import useRoleCheck from '../../hooks/useRoleCheck';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+
 const MeterList = () => {
     const { isAdmin } = useRoleCheck();
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ const MeterList = () => {
     const handleFetchMeters = async () => {
         console.log('fetching meters');
         try {
-            const { data, status} = await api.get('http://localhost:8080/api/v1/meters');
+            const { data, status} = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/meters`);
             if (status === 200) {
                 console.log(data);
                 setMeters(data);

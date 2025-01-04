@@ -12,6 +12,8 @@ const MeteringPointList = () => {
     const [stations, setStations] = useState([]);
     const [selectedMeteringPoint, setSelectedMeteringPoint] = useState({});
     const [createMeteringPointModal, setCreateMeteringPointModal] = useState(false);
+    
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
 
     const navigate = useNavigate();
     const { api } = useFetchWithAuth();
@@ -23,7 +25,7 @@ const MeteringPointList = () => {
 
     const handleFetchMeteringPoints = async () => {
         try {
-            const { data, status } = await api.get('http://localhost:8080/api/v1/metering-points');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/metering-points`);
             if(status === 200) {
                 setMeteringPoints(data);
             } else {
@@ -36,7 +38,7 @@ const MeteringPointList = () => {
 
     const handleFetchStations = async () => {
         try {
-            const { data, status } = await api.get('http://localhost:8080/api/v1/stations');
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/stations`);
             if (status === 200) {
                 console.log(data);
                 setStations(data);

@@ -114,7 +114,7 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
 
     const handleCreateMeteringPoint = async () => {
         try {
-            const url = meteringPoint.meteringPointId ? `http://localhost:8080/api/v1/metering-points/${meteringPoint.meteringPointId}` : `http://localhost:8080/api/v1/metering-points`;
+            const url = meteringPoint.meteringPointId ? `${VITE_API_BASE_URL}:8080/api/v1/metering-points/${meteringPoint.meteringPointId}` : `${VITE_API_BASE_URL}:8080/api/v1/metering-points`;
             const method = meteringPoint.meteringPointId ? 'PATCH' : 'POST'; 
             
             const response = method === 'PATCH' 

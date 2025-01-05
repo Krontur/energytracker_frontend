@@ -168,6 +168,7 @@ const UserForm = ({ onClose, loadUser }) => {
                 flexDirection: 'column',
                 width: '100%',
                 maxWidth: '320px',
+                maxHeight: '95%',
                 gap: '1rem',
                 padding: '1rem',
                 border: 1,

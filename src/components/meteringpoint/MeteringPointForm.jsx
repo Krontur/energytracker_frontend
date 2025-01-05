@@ -117,11 +117,10 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
             const url = meteringPoint.meteringPointId ? `${VITE_API_BASE_URL}:8080/api/v1/metering-points/${meteringPoint.meteringPointId}` : `${VITE_API_BASE_URL}:8080/api/v1/metering-points`;
             const method = meteringPoint.meteringPointId ? 'PATCH' : 'POST'; 
             
-            const response = method === 'PATCH' 
+            const { data, status } = method === 'PATCH' 
                 ? await api.patch(url, meteringPoint) 
                 : await api.post(url, meteringPoint);
-
-            const { data, status } = response;
+                
             if (status !== 200) {
                 console.error('Error creating Metering Point: ', data);
                 return;

@@ -120,14 +120,14 @@ const MeteringPointForm = ({ onClose, loadMeteringPoint }) => {
             const { data, status } = method === 'PATCH' 
                 ? await api.patch(url, meteringPoint) 
                 : await api.post(url, meteringPoint);
-                
-            if (status !== 200) {
+
+            if (status === 200 || status === 201) {
+                console.log(data);
+                onClose();
+                handleFetchMeteringPoints();
+            } else {
                 console.error('Error creating Metering Point: ', data);
-                return;
             }
-            console.log(data);
-            onClose();
-            handleFetchMeteringPoints();
         } catch (error) {
             console.error('Error creating Metering Point: ', error);
         }

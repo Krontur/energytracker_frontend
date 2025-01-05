@@ -17,7 +17,7 @@ jobs:
 
     - name: Deploy to Hostinger
       run: |
-        ssh -o StrictHostKeyChecking=no user@your-hostinger-ip << 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{secrets.SSH_SERVER_USER}}@${{secrets.SERVER_IP}} << 'EOF'
           if [ ! -d "/energytracker/energytracker_frontend" ]; then
             echo "Cloning repository for the first time..."
             git clone https://github.com/Krontur/energytracker_frontend.git /energytracker/energytracker_frontend

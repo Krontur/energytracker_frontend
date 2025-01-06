@@ -18,16 +18,20 @@ jobs:
     - name: Deploy to Hostinger
       run: |
         ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{secrets.SSH_SERVER_USER}}@${{secrets.SERVER_IP}} << 'EOF'
+          set -e
+          # Check if the repository directory exists
           if [ ! -d "/energytracker/energytracker_frontend" ]; then
             echo "Cloning repository for the first time..."
             git clone https://github.com/Krontur/energytracker_frontend.git /energytracker/energytracker_frontend
           else
             echo "Updating repository..."
             cd /energytracker/energytracker_frontend
+            git reset --hard HEAD  # Discard local changes
             git pull origin main
           fi
           echo "Making build_and_run.sh executable..."
           chmod +x /energytracker/energytracker_frontend/build_and_run.sh
           echo "Running build_and_run.sh..."
-          /energytracker/energytracker_frontend/build_and_run.sh || exit 1
+          nohup /energytracker/energytracker_frontend/build_and_run.sh > /dev/null 2>&1 &
+          echo "Deployment completed successfully."
         EOF

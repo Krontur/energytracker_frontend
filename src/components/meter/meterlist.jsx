@@ -1,9 +1,8 @@
-import { Box, List, ListItem, ListItemIcon, ListItemText, IconButton, ButtonGroup, Button } from '@mui/material';
+import { Box, List, ListItem, ListItemIcon, ListItemText, IconButton, ButtonGroup, Button, Modal, TextField } from '@mui/material';
 import { Edit, Visibility, Close } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MeterForm from './meterform';
-import Modal from '@mui/material/Modal';
+import MeterForm from './MeterForm';
 import useRoleCheck from '../../hooks/useRoleCheck';
 import { useFetchWithAuth } from '../../hooks/useFetchWithAuth';
 
@@ -15,64 +14,119 @@ const MeterList = () => {
     const { api } = useFetchWithAuth();
 
     const [meters, setMeters] = useState([]);
+    const [filteredMeters, setFilteredMeters] = useState([]);
+    const [filters, setFilters] = useState({ serialNumber: '', midApprovalYear: '' });
+    const [showFilters, setShowFilters] = useState(false);
     const [selectedMeter, setSelectedMeter] = useState({});
+    const [createMeterModal, setCreateMeterModal] = useState(false);
 
     useEffect(() => {
         handleFetchMeters();
-    } , []);
-    
-    const handleClose = () => {
-        setCreateMeterModal(false);
-        handleFetchMeters();
-    };
+    }, []);
+
+    useEffect(() => {
+        if (showFilters) {
+            const lowerCaseSerial = filters.serialNumber.toLowerCase();
+            const yearFilter = filters.midApprovalYear;
+            setFilteredMeters(
+                meters.filter(
+                    (meter) =>
+                        meter.serialNumber.toLowerCase().includes(lowerCaseSerial) &&
+                        meter.midApprovalYear.toString().includes(yearFilter)
+                )
+            );
+        } else {
+            setFilteredMeters(meters);
+        }
+    }, [filters, meters, showFilters]);
 
     const handleFetchMeters = async () => {
-        console.log('fetching meters');
         try {
-            const { data, status} = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/meters`);
+            const { data, status } = await api.get(`${VITE_API_BASE_URL}:8080/api/v1/meters`);
             if (status === 200) {
-                console.log(data);
                 setMeters(data);
-            } else {
-                console.error('Error:', data);
+                setFilteredMeters(data);
             }
         } catch (error) {
             console.error('Error:', error);
         }
     };
 
+    const handleClose = () => {
+        setCreateMeterModal(false);
+        handleFetchMeters();
+    };
 
-    const [ createMeterModal, setCreateMeterModal ] = useState(false);
+    const toggleFilters = () => {
+        if (showFilters) {
+            setFilters({ serialNumber: '', midApprovalYear: '' });
+        }
+        setShowFilters(!showFilters);
+    };
 
     return (
-        <Box sx={{  p: 1,
-                    border: 1,
-                    borderColor: 'primary.main',
-                    borderRadius: 1, 
-                    backgroundColor: 'background.paper',
-                    width: '100%',
-                    maxWidth:'1280px',
-                    margin: '0 auto',
-                    alignItems: 'end',
-                }}>
-            { isAdmin() && (
-                <ButtonGroup sx={{ 
+        <Box
+            sx={{
+                p: 1,
+                border: 1,
+                borderColor: 'primary.main',
+                borderRadius: 1,
+                backgroundColor: 'background.paper',
+                width: '100%',
+                maxWidth: '1280px',
+                margin: '0 auto',
+                alignItems: 'end',
+            }}
+        >
+            <ButtonGroup
+                sx={{
                     display: 'flex',
                     justifyContent: 'flex-end',
-                    alignItems: 'end'
-                }}>
+                    alignItems: 'end',
+                }}
+            >
+                <Button onClick={toggleFilters}>Filter</Button>
+                {isAdmin() && (
                     <Button
                         onClick={() => {
-                            setSelectedMeter(null)
-                            setCreateMeterModal(true)
+                            setSelectedMeter(null);
+                            setCreateMeterModal(true);
                         }}
-                    >new</Button>                
-                </ButtonGroup>
+                    >
+                        New
+                    </Button>
+                )}
+            </ButtonGroup>
+
+            {showFilters && (
+                <Box sx={{ display: 'flex', gap: 2, margin: '16px 0' }}>
+                    <TextField
+                        label="Filter by Serial Number"
+                        variant="outlined"
+                        fullWidth
+                        value={filters.serialNumber}
+                        onChange={(e) =>
+                            setFilters((prev) => ({ ...prev, serialNumber: e.target.value }))
+                        }
+                    />
+                    <TextField
+                        label="Filter by MID Approval Year"
+                        variant="outlined"
+                        fullWidth
+                        value={filters.midApprovalYear}
+                        onChange={(e) =>
+                            setFilters((prev) => ({ ...prev, midApprovalYear: e.target.value }))
+                        }
+                    />
+                </Box>
             )}
+
             <List
-                sx={{ width: '100%', 
-                      maxWidth: '1280px',
-                      bgcolor: 'background.paper' }}
+                sx={{
+                    width: '100%',
+                    maxWidth: '1280px',
+                    bgcolor: 'background.paper',
+                }}
             >
                 <ListItem
                     sx={{
@@ -82,7 +136,7 @@ const MeterList = () => {
                         padding: '10px 16px',
                         width: '100%',
                         fontWeight: 'bold',
-                        borderBottom: '2px solid #ccc', 
+                        borderBottom: '2px solid #ccc',
                     }}
                 >
                     <Box
@@ -93,24 +147,26 @@ const MeterList = () => {
                             alignItems: 'center',
                         }}
                     >
-                        <Box sx={{ flex: '1 1 20%', textAlign: 'left' }}>Serial number</Box>
+                        <Box sx={{ flex: '1 1 20%', textAlign: 'left' }}>Serial Number</Box>
                         <Box sx={{ flex: '1 1 30%', textAlign: 'left' }}>Connection Type and Address</Box>
                         <Box sx={{ flex: '1 1 30%', textAlign: 'left' }}>MID Approval Year</Box>
                         <Box sx={{ flex: '1 1 20%', textAlign: 'left' }}>Created Date</Box>
                     </Box>
-                    <Box sx={{
-                                display: 'flex',
-                                width: '13%',
-                                justifyContent: 'flex-start',
-                            }}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            width: '13%',
+                            justifyContent: 'flex-start',
+                        }}
                     >
                         Actions
                     </Box>
                 </ListItem>
 
-                {meters.map((meter) => (
-                    <ListItem key={meter.energyMeterId}
-                        sx={{ 
+                {filteredMeters.map((meter) => (
+                    <ListItem
+                        key={meter.energyMeterId}
+                        sx={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
@@ -119,40 +175,43 @@ const MeterList = () => {
                         }}
                     >
                         <Box
-                            sx={
-                                {
-                                    display: 'flex',
-                                    flex: '1',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    width: '87%',
-                                }
-                            }
+                            sx={{
+                                display: 'flex',
+                                flex: '1',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                width: '87%',
+                            }}
                         >
-                            <ListItemText primary={meter.serialNumber}
+                            <ListItemText
+                                primary={meter.serialNumber}
                                 sx={{
                                     flex: '1 1 20%',
                                     textAlign: 'left',
                                 }}
                             />
-                            <ListItemText primary={meter.connectionType} secondary={meter.connectionAddress}
+                            <ListItemText
+                                primary={meter.connectionType}
+                                secondary={meter.connectionAddress}
                                 sx={{
                                     flex: '1 1 30%',
                                     textAlign: 'left',
                                 }}
                             />
-                            <ListItemText primary={meter.midApprovalYear} 
+                            <ListItemText
+                                primary={meter.midApprovalYear}
                                 sx={{
                                     flex: '1 1 30%',
                                     textAlign: 'left',
                                 }}
                             />
-                            <ListItemText primary={meter.createdAt} 
+                            <ListItemText
+                                primary={meter.createdAt}
                                 sx={{
                                     flex: '1 1 20%',
                                     textAlign: 'left',
                                 }}
-                            />   
+                            />
                         </Box>
                         <Box
                             sx={{
@@ -165,22 +224,22 @@ const MeterList = () => {
                         >
                             <ListItemIcon>
                                 <ButtonGroup>
-                                    { isAdmin() && (
-                                            <IconButton onClick={() => {
-                                                setSelectedMeter(meter)
-                                                setCreateMeterModal(true)
-
-                                            }}>
-                                                <Edit />
-                                            </IconButton>
+                                    {isAdmin() && (
+                                        <IconButton
+                                            onClick={() => {
+                                                setSelectedMeter(meter);
+                                                setCreateMeterModal(true);
+                                            }}
+                                        >
+                                            <Edit />
+                                        </IconButton>
                                     )}
-                                    <IconButton onClick={() =>
-                                        {
+                                    <IconButton
+                                        onClick={() => {
                                             setSelectedMeter(meter);
-                                            console.log(selectedMeter);
                                             navigate(`/meters/${meter.energyMeterId}`);
-                                        }
-                                    }>
+                                        }}
+                                    >
                                         <Visibility />
                                     </IconButton>
                                 </ButtonGroup>
@@ -189,32 +248,32 @@ const MeterList = () => {
                     </ListItem>
                 ))}
             </List>
-            <Modal open={createMeterModal} >
+            <Modal open={createMeterModal}>
                 <Box
-                sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: { xs:'90%', md: '60%'},
-                    bgcolor: 'background.paper',
-                    borderRadius: 1,
-                    boxShadow: 24,
-                    p: 4,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: { xs: '90%', md: '60%' },
+                        bgcolor: 'background.paper',
+                        borderRadius: 1,
+                        boxShadow: 24,
+                        p: 4,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
                 >
-                    <IconButton onClick={() => handleClose()} sx={{ alignSelf:'flex-end'}}>
+                    <IconButton onClick={() => handleClose()} sx={{ alignSelf: 'flex-end' }}>
                         <Close />
                     </IconButton>
-                    <MeterForm onClose={handleClose} loadMeter={selectedMeter}/>
+                    <MeterForm onClose={handleClose} loadMeter={selectedMeter} />
                 </Box>
             </Modal>
         </Box>
     );
-}
+};
 
 export default MeterList;

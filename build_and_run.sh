@@ -13,3 +13,5 @@ echo "Starting Docker Compose..."
 docker-compose up --build -d || { echo "Docker Compose failed to start. Exiting..."; exit 1; }
 
 echo "Docker Compose started successfully!"
+
+exit 0

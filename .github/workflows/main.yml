@@ -29,7 +29,5 @@ jobs:
           echo "Making build_and_run.sh executable..."
           chmod +x /energytracker/energytracker_frontend/build_and_run.sh
           echo "Running build_and_run.sh..."
-          /energytracker/energytracker_frontend/build_and_run.sh || exit 1
+          nohup /energytracker/energytracker_frontend/build_and_run.sh > /dev/null 2>&1 & exit 0
         EOF
-
-        

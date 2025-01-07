@@ -17,8 +17,6 @@ FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
-
 EXPOSE 5173
 
 CMD ["sh", "-c", "nginx -g 'daemon off;' & while true; do sleep 3600; done"]
